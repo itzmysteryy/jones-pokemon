@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jones — Collection Manager (WIP)</title>
+    <style>
+        
+        /* Password Screen */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .password-box {
+            border: 2px solid #000;
+            padding: 30px;
+            text-align: center;
+            background: #fff;
+        }
+        
+        .password-box h1 {
+            margin-bottom: 10px;
+        }
+        
+        .password-box input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #000;
+            width: 200px;
+            margin: 10px 0;
+        }
+        
+        .password-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #ddd;
+            border: 1px solid #000;
+        }
+        
+        .password-error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+        }
+        
+        /* Main App */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .app-container.visible {
+            display: block;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .top-actions button {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #ddd;
+            border: 1px solid #999;
+        }
+        
+        .sync-indicator {
+            padding: 8px 12px;
+            background: #eee;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+        
+        .sync-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #999;
+            margin-right: 5px;
+        }
+        
+        .sync-dot.connected {
+            background: green;
+        }
+        
+        .sync-dot.syncing {
+            background: orange;
+        }
+        
+        /* Dashboard */
+        .dashboard-card {
+            background: #fff;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-header {
+            padding: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            font-weight: bold;
+        }
+        
+        .stat-sublabel {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .stat-value.positive {
+            color: green;
+        }
+        
+        .stat-value.negative {
+            color: red;
+        }
+        
+        /* Controls */
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #ccc;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #eee;
+            border: 1px solid #ccc;
+        }
+        
+        .filter-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .filter-select {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .add-btn {
+            padding: 8px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .item-name {
+            font-weight: bold;
+        }
+        
+        .item-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .type-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #eee;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .status-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .status-pill.sold {
+            background: #d4edda;
+            color: green;
+        }
+        
+        .status-pill.holding {
+            background: #eee;
+            color: #666;
+        }
+        
+        .profit-value.positive {
+            color: green;
+            font-weight: bold;
+        }
+        
+        .profit-value.negative {
+            color: red;
+            font-weight: bold;
+        }
+        
+        .row-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            background: #eee;
+            border: 1px solid #ccc;
+        }
+        
+        .row-btn.delete {
+            background: #ffcccc;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: #fff;
+            border: 2px solid #000;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #ccc;
+            background: #f5f5f5;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #ccc;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-label .req {
+            color: red;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-divider {
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+        
+        .form-section-title {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        .type-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .type-card {
+            padding: 15px 10px;
+            border: 2px solid #ccc;
+            text-align: center;
+            cursor: pointer;
+            background: #f9f9f9;
+        }
+        
+        .type-card:hover {
+            border-color: #999;
+        }
+        
+        .type-card.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+        }
+        
+        .type-card-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .type-card-label {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .char-counter {
+            font-size: 11px;
+            color: #999;
+            text-align: right;
+        }
+        
+        .conditional-fields {
+            display: none;
+        }
+        
+        .conditional-fields.visible {
+            display: block;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        
+        .btn-cancel {
+            background: #eee;
+        }
+        
+        .btn-save {
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+        }
+        
+        .btn-sheetdb {
+            background: #28a745;
+            color: white;
+            border: none;
+        }
+        
+        /* Delete Modal */
+        .delete-modal .modal {
+            max-width: 350px;
+            text-align: center;
+        }
+        
+        .delete-icon-wrap {
+            font-size: 40px;
+            color: red;
+            margin-bottom: 10px;
+        }
+        
+        /* Settings Modal */
+        .setup-steps {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+        
+        .setup-step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .setup-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .step-desc code {
+            background: #eee;
+            padding: 1px 4px;
+            font-size: 11px;
+        }
+        
+        .step-desc a {
+            color: #007bff;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        
+        .connection-status.connected {
+            background: #d4edda;
+        }
+        
+        .connection-status.error {
+            background: #f8d7da;
+        }
+        
+        .connection-icon {
+            font-size: 20px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #ccc;
+            margin-top: 20px;
+            background: #fff;
+        }
+        
+        /* WIP Notice */
+        .wip-banner {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .wip-banner h2 {
+            color: #856404;
+            margin: 0 0 5px 0;
+        }
+        
+        .wip-banner p {
+            color: #856404;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Screen -->
+    <div class="password-screen" id="password-screen">
+        <div class="password-box">
+            <h1>🔒 Jones</h1>
+            <p>Enter password to access</p>
+            <div>
+                <input type="password" id="password-input" placeholder="Password..." autofocus>
+            </div>
+            <div>
+                <button onclick="checkPassword()">Enter</button>
+            </div>
+            <p class="password-error" id="password-error">❌ Wrong password! Redirecting...</p>
+        </div>
+    </div>
+
+    <div class="app-container" id="app-container">
+        <!-- WIP Banner -->
+        <div class="wip-banner">
+            <h2>⚠️ WORK IN PROGRESS</h2>
+            <p>All features are functional. UI/Design improvements pending.</p>
+        </div>
+        
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="logo">⚡ Jones</div>
+            <div class="top-actions">
+                <button onclick="exportBackup()" title="Backup">💾 Backup</button>
+                <button onclick="document.getElementById('import-input').click()" title="Import">📂 Import</button>
+            </div>
+        </div>
+        
+        <input type="file" id="import-input" class="file-input" accept=".json" onchange="handleImport(event)">
+        
+        <!-- Main Dashboard -->
+        <div class="dashboard-card">
+            <!-- Stats -->
+            <div class="dashboard-header">
+                <div class="stat-row">
+                    <div>
+                        <div class="stat-label">Collection Overview</div>
+                        <div class="stat-sublabel"><span id="stat-sold-count">0</span> sold · <span id="stat-holding-count">0</span> holding</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-sublabel">Total items</div>
+                    </div>
+                </div>
+                
+                <div class="stat-row">
+                    <div>
+                        <div class="stat-label">Investment</div>
+                        <div class="stat-sublabel">All items</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="stat-investment">0 kr</div>
+                    </div>
+                </div>
+                
+                <div class="stat-row">
+                    <div>
+                        <div class="stat-label">Current Value</div>
+                        <div class="stat-sublabel">Portfolio total</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="stat-value">0 kr</div>
+                    </div>
+                </div>
+                
+                <div class="stat-row">
+                    <div>
+                        <div class="stat-label">Profit / Loss</div>
+                        <div class="stat-sublabel">From sold items</div>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="stat-profit">0 kr</div>
+                        <div class="stat-sublabel">ROI: <span id="stat-roi">0%</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="controls-row">
+                <input type="text" class="search-input" id="search-input" placeholder="Search items...">
+                <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all')">All</button>
+                <button class="filter-btn" data-status="holding" onclick="setStatusFilter('holding')">Holding</button>
+                <button class="filter-btn" data-status="sold" onclick="setStatusFilter('sold')">Sold</button>
+                <select class="filter-select" id="type-filter">
+                    <option value="all">All Types</option>
+                    <option value="Single">Single</option>
+                    <option value="Graded">Graded</option>
+                    <option value="Sealed">Sealed</option>
+                    <option value="Other">Other</option>
+                </select>
+                <button class="add-btn" onclick="showWIPMessage()" style="opacity: 0.5; cursor: not-allowed;">+ Add Item (WIP)</button>
+            </div>
+            
+            <!-- Table -->
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Type</th>
+                            <th>Purchase</th>
+                            <th>Sold</th>
+                            <th>Status</th>
+                            <th>Profit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                
+                <div class="empty-state hidden" id="empty-state">
+                    <div>📦</div>
+                    <div><strong>No items yet</strong></div>
+                    <div>Add your first item to get started</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>⚡ <strong>Jones</strong></p>
+            <p>© 2025 Jones & Lakshya. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="item-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modal-title">Add Item</span>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="item-form">
+                    <input type="hidden" id="form-id">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Item Name <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="form-name" maxlength="75" placeholder="e.g., Charizard Base Set Holo" required>
+                        <div class="char-counter"><span id="name-count">0</span>/75</div>
+                    </div>
+                    
+                    <div class="form-divider"></div>
+                    <div class="form-section-title">Item Type</div>
+                    
+                    <div class="type-cards">
+                        <div class="type-card" data-type="Single" onclick="selectType('Single')">
+                            <div class="type-card-icon">🎴</div>
+                            <div class="type-card-label">Single</div>
+                        </div>
+                        <div class="type-card" data-type="Graded" onclick="selectType('Graded')">
+                            <div class="type-card-icon">⭐</div>
+                            <div class="type-card-label">Graded</div>
+                        </div>
+                        <div class="type-card" data-type="Sealed" onclick="selectType('Sealed')">
+                            <div class="type-card-icon">📦</div>
+                            <div class="type-card-label">Sealed</div>
+                        </div>
+                        <div class="type-card" data-type="Other" onclick="selectType('Other')">
+                            <div class="type-card-icon">📎</div>
+                            <div class="type-card-label">Other</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="form-type" required>
+                    
+                    <!-- Single Fields -->
+                    <div class="conditional-fields" id="fields-single">
+                        <div class="form-divider"></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Card Number</label>
+                                <input type="text" class="form-input" id="form-card-number" maxlength="10" placeholder="e.g., 4/102">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Condition</label>
+                                <select class="form-select" id="form-condition">
+                                    <option value="">Select...</option>
+                                    <option value="MT">MT (Mint)</option>
+                                    <option value="NM">NM (Near Mint)</option>
+                                    <option value="EX">EX (Excellent)</option>
+                                    <option value="GD">GD (Good)</option>
+                                    <option value="LP">LP (Light Play)</option>
+                                    <option value="PL">PL (Played)</option>
+                                    <option value="PO">PO (Poor)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Graded Fields -->
+                    <div class="conditional-fields" id="fields-graded">
+                        <div class="form-divider"></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Grading Company <span class="req">*</span></label>
+                                <select class="form-select" id="form-grading-company">
+                                    <option value="">Select...</option>
+                                    <option value="PSA">PSA</option>
+                                    <option value="CGC">CGC</option>
+                                    <option value="BGS">BGS</option>
+                                    <option value="SGC">SGC</option>
+                                    <option value="ACR">ACR</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Grade <span class="req">*</span></label>
+                                <input type="text" class="form-input" id="form-grade" placeholder="e.g., 9.5">
+                            </div>
+                        </div>
+                        <div class="form-grid" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">Cert Number <span class="req">*</span></label>
+                                <input type="text" class="form-input" id="form-cert-number" placeholder="Certificate ID">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Card Number</label>
+                                <input type="text" class="form-input" id="form-graded-card-number" maxlength="10" placeholder="Optional">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sealed Fields -->
+                    <div class="conditional-fields" id="fields-sealed">
+                        <div class="form-divider"></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Purchase Location</label>
+                                <input type="text" class="form-input" id="form-purchase-location" placeholder="e.g., Ark, eBay">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sell Location</label>
+                                <input type="text" class="form-input" id="form-sell-location" placeholder="e.g., Facebook">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-divider"></div>
+                    <div class="form-section-title">Purchase Details</div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Price (NOK) <span class="req">*</span></label>
+                            <input type="number" class="form-input" id="form-purchase-price" min="0" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date <span class="req">*</span></label>
+                            <input type="date" class="form-input" id="form-purchase-date" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" id="form-payment-buy">
+                            <option value="">Select...</option>
+                            <option value="Vipps">Vipps</option>
+                            <option value="Bank transfer">Bank Transfer</option>
+                            <option value="PayPal">PayPal</option>
+                            <option value="Card">Card</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-divider"></div>
+                    <div class="form-section-title">Sell Details (Optional)</div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Sell Price (NOK)</label>
+                            <input type="number" class="form-input" id="form-sell-price" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sell Date</label>
+                            <input type="date" class="form-input" id="form-sell-date">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" id="form-payment-sell">
+                            <option value="">Select...</option>
+                            <option value="Vipps">Vipps</option>
+                            <option value="Bank transfer">Bank Transfer</option>
+                            <option value="PayPal">PayPal</option>
+                            <option value="Card">Card</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-divider"></div>
+                    <div class="form-section-title">Notes</div>
+                    
+                    <div class="form-group">
+                        <textarea class="form-textarea" id="form-description" maxlength="200" placeholder="Additional notes..."></textarea>
+                        <div class="char-counter"><span id="desc-count">0</span>/200</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveItem()">Save Item</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Modal -->
+    <div class="modal-overlay delete-modal" id="delete-modal">
+        <div class="modal">
+            <div class="modal-body" style="padding: 30px;">
+                <div class="delete-icon-wrap">🗑️</div>
+                <div><strong>Delete this item?</strong></div>
+                <div style="color: #666; margin-top: 5px;">This cannot be undone.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal-overlay settings-modal" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">SheetDB Setup</span>
+                <button class="modal-close" onclick="closeSettingsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setup-steps">
+                    <div class="setup-step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <div class="step-title">Create a Google Sheet</div>
+                            <div class="step-desc">
+                                <a href="https://sheets.new" target="_blank">Click here to create a new sheet</a>. 
+                                Add these column headers in Row 1:<br>
+                                <code>id</code> <code>item_name</code> <code>type</code> <code>purchase_price_nok</code> <code>purchase_date</code> <code>payment_method_buy</code> <code>sell_price_nok</code> <code>sell_date</code> <code>payment_method_sell</code> <code>description</code> <code>card_number</code> <code>condition</code> <code>grading_company</code> <code>grade</code> <code>cert_number</code> <code>graded_card_number</code> <code>purchase_location</code> <code>sell_location</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setup-step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <div class="step-title">Go to SheetDB</div>
+                            <div class="step-desc">
+                                Visit <a href="https://sheetdb.io" target="_blank">sheetdb.io</a> and sign up for free.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setup-step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <div class="step-title">Create API</div>
+                            <div class="step-desc">
+                                Click "Create API", paste your Google Sheet URL, and create. Copy the API URL (looks like <code>https://sheetdb.io/api/v1/xxxxx</code>).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">SheetDB API URL <span class="req">*</span></label>
+                    <input type="url" class="form-input" id="sheetdb-url" placeholder="https://sheetdb.io/api/v1/xxxxxxxxx">
+                </div>
+                
+                <div class="connection-status" id="connection-status">
+                    <div class="connection-icon">🔌</div>
+                    <div>
+                        <div><strong>Not Connected</strong></div>
+                        <div style="font-size: 12px; color: #666;">Enter your SheetDB API URL to connect</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="disconnectSheetDB()">Disconnect</button>
+                <button class="btn btn-sheetdb" onclick="testConnection()">Connect & Sync</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password Protection
+        const CORRECT_PASSWORD = "Jonas@123";
+        
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorEl = document.getElementById('password-error');
+            
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('app-container').classList.add('visible');
+            } else {
+                errorEl.classList.add('show');
+                setTimeout(() => {
+                    window.location.href = 'https://google.com';
+                }, 1500);
+            }
+        }
+        
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // State
+        let items = [];
+        let nextId = 10000;
+        let editingId = null;
+        let deleteId = null;
+        let statusFilter = 'all';
+        let sheetdbUrl = '';
+        let isConnected = false;
+        let isSyncing = false;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            loadSheetDBUrl();
+            
+            if (items.length === 0 && !sheetdbUrl) {
+                loadSampleData();
+            }
+            
+            render();
+            setupListeners();
+            updateSyncStatus();
+            
+            if (sheetdbUrl) {
+                syncFromSheetDB();
+            }
+        });
+
+        function loadLocalData() {
+            try {
+                const stored = localStorage.getItem('jones_items');
+                const storedId = localStorage.getItem('jones_nextId');
+                if (stored) items = JSON.parse(stored);
+                if (storedId) nextId = parseInt(storedId);
+            } catch (e) {
+                console.error('Load error:', e);
+            }
+        }
+
+        function saveLocalData() {
+            try {
+                localStorage.setItem('jones_items', JSON.stringify(items));
+                localStorage.setItem('jones_nextId', nextId.toString());
+            } catch (e) {
+                console.error('Save error:', e);
+            }
+        }
+
+        function loadSheetDBUrl() {
+            sheetdbUrl = localStorage.getItem('jones_sheetdb_url') || '';
+            document.getElementById('sheetdb-url').value = sheetdbUrl;
+            isConnected = !!sheetdbUrl;
+        }
+
+        function saveSheetDBUrl(url) {
+            sheetdbUrl = url;
+            localStorage.setItem('jones_sheetdb_url', url);
+            isConnected = !!url;
+            updateSyncStatus();
+        }
+
+        function updateSyncStatus() {
+            const dot = document.getElementById('sync-dot');
+            const text = document.getElementById('sync-text');
+            const status = document.getElementById('connection-status');
+            
+            dot.classList.remove('connected', 'syncing');
+            status.classList.remove('connected', 'error');
+            
+            if (isSyncing) {
+                dot.classList.add('syncing');
+                text.textContent = 'Syncing...';
+            } else if (isConnected) {
+                dot.classList.add('connected');
+                text.textContent = 'Connected';
+                status.classList.add('connected');
+                status.innerHTML = '<div class="connection-icon">✅</div><div><strong>Connected</strong><div style="font-size: 12px;">Synced with SheetDB</div></div>';
+            } else {
+                text.textContent = 'Not Connected';
+                status.innerHTML = '<div class="connection-icon">🔌</div><div><strong>Not Connected</strong><div style="font-size: 12px; color: #666;">Enter your SheetDB API URL to connect</div></div>';
+            }
+        }
+
+        function loadSampleData() {
+            items = [
+                {
+                    id: nextId++,
+                    item_name: "Charizard Base Set 1st Edition",
+                    type: "Graded",
+                    purchase_price_nok: 45000,
+                    purchase_date: "2023-06-15",
+                    payment_method_buy: "Bank transfer",
+                    sell_price_nok: 62000,
+                    sell_date: "2024-01-20",
+                    payment_method_sell: "Vipps",
+                    description: "Holy grail card",
+                    grading_company: "PSA",
+                    grade: "9",
+                    cert_number: "48573921"
+                },
+                {
+                    id: nextId++,
+                    item_name: "Pikachu Illustrator Promo",
+                    type: "Graded",
+                    purchase_price_nok: 125000,
+                    purchase_date: "2023-09-01",
+                    payment_method_buy: "PayPal",
+                    description: "Ultra rare promo",
+                    grading_company: "CGC",
+                    grade: "8.5",
+                    cert_number: "CGC-9876543"
+                },
+                {
+                    id: nextId++,
+                    item_name: "Pokémon 151 Booster Box",
+                    type: "Sealed",
+                    purchase_price_nok: 1899,
+                    purchase_date: "2023-11-10",
+                    payment_method_buy: "Card",
+                    sell_price_nok: 2850,
+                    sell_date: "2024-02-15",
+                    payment_method_sell: "Vipps",
+                    purchase_location: "Ark.no",
+                    sell_location: "Facebook"
+                },
+                {
+                    id: nextId++,
+                    item_name: "Blastoise Base Set Holo",
+                    type: "Single",
+                    purchase_price_nok: 2500,
+                    purchase_date: "2023-08-20",
+                    payment_method_buy: "Vipps",
+                    description: "Clean corners",
+                    card_number: "2/102",
+                    condition: "NM"
+                },
+                {
+                    id: nextId++,
+                    item_name: "Scarlet & Violet ETB",
+                    type: "Sealed",
+                    purchase_price_nok: 649,
+                    purchase_date: "2024-01-05",
+                    payment_method_buy: "Card",
+                    purchase_location: "Platekompaniet"
+                }
+            ];
+            saveLocalData();
+        }
+
+        // SheetDB Functions
+        async function syncFromSheetDB() {
+            if (!sheetdbUrl || isSyncing) return;
+            
+            isSyncing = true;
+            updateSyncStatus();
+            
+            try {
+                const response = await fetch(sheetdbUrl);
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    items = data.map(row => ({
+                        id: parseInt(row.id) || nextId++,
+                        item_name: row.item_name || '',
+                        type: row.type || 'Other',
+                        purchase_price_nok: parseFloat(row.purchase_price_nok) || 0,
+                        purchase_date: row.purchase_date || null,
+                        payment_method_buy: row.payment_method_buy || null,
+                        sell_price_nok: parseFloat(row.sell_price_nok) || null,
+                        sell_date: row.sell_date || null,
+                        payment_method_sell: row.payment_method_sell || null,
+                        description: row.description || null,
+                        card_number: row.card_number || null,
+                        condition: row.condition || null,
+                        grading_company: row.grading_company || null,
+                        grade: row.grade || null,
+                        cert_number: row.cert_number || null,
+                        graded_card_number: row.graded_card_number || null,
+                        purchase_location: row.purchase_location || null,
+                        sell_location: row.sell_location || null
+                    })).filter(item => item.item_name);
+                    
+                    const maxId = Math.max(...items.map(i => i.id || 0), 9999);
+                    nextId = maxId + 1;
+                    
+                    saveLocalData();
+                    render();
+                }
+                
+                isConnected = true;
+            } catch (err) {
+                console.error('Sync error:', err);
+                isConnected = false;
+            }
+            
+            isSyncing = false;
+            updateSyncStatus();
+        }
+
+        async function syncToSheetDB() {
+            if (!sheetdbUrl) {
+                openSettingsModal();
+                return;
+            }
+            
+            if (isSyncing) return;
+            
+            isSyncing = true;
+            updateSyncStatus();
+            
+            try {
+                await fetch(sheetdbUrl + '/all', { method: 'DELETE' });
+                
+                if (items.length > 0) {
+                    const response = await fetch(sheetdbUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: items })
+                    });
+                    
+                    const result = await response.json();
+                    if (!result.created) throw new Error('Sync failed');
+                }
+                
+                isConnected = true;
+            } catch (err) {
+                console.error('Sync error:', err);
+                alert('Sync failed! Check your connection.');
+            }
+            
+            isSyncing = false;
+            updateSyncStatus();
+        }
+
+        async function syncData() {
+            if (!sheetdbUrl) {
+                openSettingsModal();
+                return;
+            }
+            await syncToSheetDB();
+        }
+
+        async function addToSheetDB(item) {
+            if (!sheetdbUrl) return;
+            try {
+                await fetch(sheetdbUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: [item] })
+                });
+            } catch (err) {
+                console.error('Add error:', err);
+            }
+        }
+
+        async function updateInSheetDB(item) {
+            if (!sheetdbUrl) return;
+            try {
+                await fetch(`${sheetdbUrl}/id/${item.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: item })
+                });
+            } catch (err) {
+                console.error('Update error:', err);
+            }
+        }
+
+        async function deleteFromSheetDB(id) {
+            if (!sheetdbUrl) return;
+            try {
+                await fetch(`${sheetdbUrl}/id/${id}`, { method: 'DELETE' });
+            } catch (err) {
+                console.error('Delete error:', err);
+            }
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('sheetdb-url').value.trim();
+            
+            if (!url) {
+                alert('Please enter your SheetDB API URL');
+                return;
+            }
+            
+            isSyncing = true;
+            updateSyncStatus();
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error('Invalid API URL');
+                
+                if (Array.isArray(data) && data.length > 0 && data[0].item_name) {
+                    if (confirm(`Found ${data.length} items in sheet. Load them? (Cancel to overwrite with local data)`)) {
+                        items = data.map(row => ({
+                            id: parseInt(row.id) || nextId++,
+                            item_name: row.item_name || '',
+                            type: row.type || 'Other',
+                            purchase_price_nok: parseFloat(row.purchase_price_nok) || 0,
+                            purchase_date: row.purchase_date || null,
+                            payment_method_buy: row.payment_method_buy || null,
+                            sell_price_nok: parseFloat(row.sell_price_nok) || null,
+                            sell_date: row.sell_date || null,
+                            payment_method_sell: row.payment_method_sell || null,
+                            description: row.description || null,
+                            card_number: row.card_number || null,
+                            condition: row.condition || null,
+                            grading_company: row.grading_company || null,
+                            grade: row.grade || null,
+                            cert_number: row.cert_number || null,
+                            graded_card_number: row.graded_card_number || null,
+                            purchase_location: row.purchase_location || null,
+                            sell_location: row.sell_location || null
+                        })).filter(item => item.item_name);
+                        
+                        const maxId = Math.max(...items.map(i => i.id || 0), 9999);
+                        nextId = maxId + 1;
+                        saveLocalData();
+                    } else {
+                        saveSheetDBUrl(url);
+                        await syncToSheetDB();
+                    }
+                } else {
+                    saveSheetDBUrl(url);
+                    await syncToSheetDB();
+                }
+                
+                saveSheetDBUrl(url);
+                render();
+                closeSettingsModal();
+                alert('✅ Connected successfully!');
+                
+            } catch (err) {
+                console.error('Connection error:', err);
+                alert('❌ Connection failed! Make sure:\n\n1. The URL is correct\n2. The sheet has proper column headers\n3. SheetDB API is set up correctly');
+                
+                const status = document.getElementById('connection-status');
+                status.classList.add('error');
+                status.innerHTML = '<div class="connection-icon">❌</div><div><strong>Connection Failed</strong><div style="font-size: 12px;">Check URL and try again</div></div>';
+            }
+            
+            isSyncing = false;
+            updateSyncStatus();
+        }
+
+        function disconnectSheetDB() {
+            if (confirm('Disconnect from SheetDB? Your local data will be kept.')) {
+                saveSheetDBUrl('');
+                document.getElementById('sheetdb-url').value = '';
+                updateSyncStatus();
+            }
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('active');
+        }
+
+        function setupListeners() {
+            document.getElementById('search-input').addEventListener('input', render);
+            document.getElementById('type-filter').addEventListener('change', render);
+            
+            document.getElementById('form-name').addEventListener('input', (e) => {
+                document.getElementById('name-count').textContent = e.target.value.length;
+            });
+            
+            document.getElementById('form-description').addEventListener('input', (e) => {
+                document.getElementById('desc-count').textContent = e.target.value.length;
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeDeleteModal();
+                    closeSettingsModal();
+                }
+            });
+        }
+
+        function setStatusFilter(status) {
+            statusFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+            render();
+        }
+
+        function render() {
+            updateStats();
+            renderTable();
+        }
+
+        function updateStats() {
+            const sold = items.filter(i => i.sell_price_nok || i.sell_date);
+            const holding = items.filter(i => !i.sell_price_nok && !i.sell_date);
+            
+            const investment = items.reduce((sum, i) => sum + (i.purchase_price_nok || 0), 0);
+            const value = items.reduce((sum, i) => sum + (i.sell_price_nok || i.purchase_price_nok || 0), 0);
+            const profit = sold.reduce((sum, i) => sum + ((i.sell_price_nok || 0) - (i.purchase_price_nok || 0)), 0);
+            
+            const soldInvestment = sold.reduce((sum, i) => sum + (i.purchase_price_nok || 0), 0);
+            const roi = soldInvestment > 0 ? ((profit / soldInvestment) * 100).toFixed(1) : 0;
+            
+            document.getElementById('stat-total').textContent = items.length;
+            document.getElementById('stat-sold-count').textContent = sold.length;
+            document.getElementById('stat-holding-count').textContent = holding.length;
+            document.getElementById('stat-investment').textContent = investment.toLocaleString() + ' kr';
+            document.getElementById('stat-value').textContent = value.toLocaleString() + ' kr';
+            
+            const profitEl = document.getElementById('stat-profit');
+            profitEl.textContent = (profit >= 0 ? '+' : '') + profit.toLocaleString() + ' kr';
+            profitEl.className = 'stat-value ' + (profit >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('stat-roi').textContent = roi + '%';
+        }
+
+        function renderTable() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const type = document.getElementById('type-filter').value;
+            
+            let filtered = items.filter(item => {
+                const isSold = item.sell_price_nok || item.sell_date;
+                
+                if (statusFilter === 'sold' && !isSold) return false;
+                if (statusFilter === 'holding' && isSold) return false;
+                if (type !== 'all' && item.type !== type) return false;
+                
+                if (search) {
+                    const fields = [item.item_name, item.card_number, item.graded_card_number, item.grading_company, item.cert_number, item.description].filter(Boolean).join(' ').toLowerCase();
+                    if (!fields.includes(search)) return false;
+                }
+                
+                return true;
+            });
+            
+            const tbody = document.getElementById('table-body');
+            const empty = document.getElementById('empty-state');
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            
+            tbody.innerHTML = filtered.map(item => {
+                const isSold = item.sell_price_nok || item.sell_date;
+                const profit = isSold ? (item.sell_price_nok || 0) - (item.purchase_price_nok || 0) : null;
+                
+                let meta = `#${item.id}`;
+                if (item.type === 'Graded' && item.grading_company) {
+                    meta += ` · ${item.grading_company} ${item.grade || ''}`;
+                } else if (item.type === 'Single' && item.card_number) {
+                    meta += ` · ${item.card_number}`;
+                }
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="item-name">${item.item_name}</div>
+                            <div class="item-meta">${meta}</div>
+                        </td>
+                        <td><span class="type-tag">${item.type}</span></td>
+                        <td>
+                            <div>${item.purchase_price_nok?.toLocaleString()} kr</div>
+                            <div class="item-meta">${formatDate(item.purchase_date)}</div>
+                        </td>
+                        <td>
+                            ${isSold ? `
+                                <div>${item.sell_price_nok?.toLocaleString()} kr</div>
+                                <div class="item-meta">${formatDate(item.sell_date)}</div>
+                            ` : '—'}
+                        </td>
+                        <td>
+                            <span class="status-pill ${isSold ? 'sold' : 'holding'}">
+                                ${isSold ? '✓ Sold' : '⏳ Holding'}
+                            </span>
+                        </td>
+                        <td>
+                            ${profit !== null ? `
+                                <span class="profit-value ${profit >= 0 ? 'positive' : 'negative'}">
+                                    ${profit >= 0 ? '+' : ''}${profit.toLocaleString()} kr
+                                </span>
+                            ` : '—'}
+                        </td>
+                        <td>
+                            <button class="row-btn" onclick="editItem(${item.id})">✏️</button>
+                            <button class="row-btn delete" onclick="deleteItem(${item.id})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function selectType(type) {
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.type === type);
+            });
+            document.getElementById('form-type').value = type;
+            
+            document.getElementById('fields-single').classList.toggle('visible', type === 'Single');
+            document.getElementById('fields-graded').classList.toggle('visible', type === 'Graded');
+            document.getElementById('fields-sealed').classList.toggle('visible', type === 'Sealed');
+        }
+
+        function openModal(id = null) {
+            editingId = id;
+            const modal = document.getElementById('item-modal');
+            const title = document.getElementById('modal-title');
+            
+            document.getElementById('item-form').reset();
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.conditional-fields').forEach(f => f.classList.remove('visible'));
+            document.getElementById('name-count').textContent = '0';
+            document.getElementById('desc-count').textContent = '0';
+            
+            if (id) {
+                title.textContent = 'Edit Item';
+                const item = items.find(i => i.id === id);
+                if (item) {
+                    document.getElementById('form-id').value = item.id;
+                    document.getElementById('form-name').value = item.item_name || '';
+                    document.getElementById('name-count').textContent = (item.item_name || '').length;
+                    
+                    selectType(item.type);
+                    
+                    document.getElementById('form-purchase-price').value = item.purchase_price_nok || '';
+                    document.getElementById('form-purchase-date').value = item.purchase_date || '';
+                    document.getElementById('form-payment-buy').value = item.payment_method_buy || '';
+                    document.getElementById('form-sell-price').value = item.sell_price_nok || '';
+                    document.getElementById('form-sell-date').value = item.sell_date || '';
+                    document.getElementById('form-payment-sell').value = item.payment_method_sell || '';
+                    document.getElementById('form-description').value = item.description || '';
+                    document.getElementById('desc-count').textContent = (item.description || '').length;
+                    
+                    if (item.type === 'Single') {
+                        document.getElementById('form-card-number').value = item.card_number || '';
+                        document.getElementById('form-condition').value = item.condition || '';
+                    } else if (item.type === 'Graded') {
+                        document.getElementById('form-grading-company').value = item.grading_company || '';
+                        document.getElementById('form-grade').value = item.grade || '';
+                        document.getElementById('form-cert-number').value = item.cert_number || '';
+                        document.getElementById('form-graded-card-number').value = item.graded_card_number || '';
+                    } else if (item.type === 'Sealed') {
+                        document.getElementById('form-purchase-location').value = item.purchase_location || '';
+                        document.getElementById('form-sell-location').value = item.sell_location || '';
+                    }
+                }
+            } else {
+                title.textContent = 'Add Item';
+                document.getElementById('form-purchase-date').value = new Date().toISOString().split('T')[0];
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('item-modal').classList.remove('active');
+            editingId = null;
+        }
+
+        async function saveItem() {
+            const type = document.getElementById('form-type').value;
+            const name = document.getElementById('form-name').value.trim();
+            const price = parseFloat(document.getElementById('form-purchase-price').value);
+            const date = document.getElementById('form-purchase-date').value;
+            
+            if (!name || !type || isNaN(price) || !date) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const item = {
+                id: editingId || nextId++,
+                item_name: name,
+                type: type,
+                purchase_price_nok: price,
+                purchase_date: date,
+                payment_method_buy: document.getElementById('form-payment-buy').value || null,
+                sell_price_nok: parseFloat(document.getElementById('form-sell-price').value) || null,
+                sell_date: document.getElementById('form-sell-date').value || null,
+                payment_method_sell: document.getElementById('form-payment-sell').value || null,
+                description: document.getElementById('form-description').value.trim() || null,
+                card_number: null,
+                condition: null,
+                grading_company: null,
+                grade: null,
+                cert_number: null,
+                graded_card_number: null,
+                purchase_location: null,
+                sell_location: null
+            };
+            
+            if (type === 'Single') {
+                item.card_number = document.getElementById('form-card-number').value || null;
+                item.condition = document.getElementById('form-condition').value || null;
+            } else if (type === 'Graded') {
+                item.grading_company = document.getElementById('form-grading-company').value || null;
+                item.grade = document.getElementById('form-grade').value || null;
+                item.cert_number = document.getElementById('form-cert-number').value || null;
+                item.graded_card_number = document.getElementById('form-graded-card-number').value || null;
+            } else if (type === 'Sealed') {
+                item.purchase_location = document.getElementById('form-purchase-location').value || null;
+                item.sell_location = document.getElementById('form-sell-location').value || null;
+            }
+            
+            if (editingId) {
+                const index = items.findIndex(i => i.id === editingId);
+                if (index !== -1) items[index] = item;
+                if (isConnected) await updateInSheetDB(item);
+            } else {
+                items.push(item);
+                if (isConnected) await addToSheetDB(item);
+            }
+            
+            saveLocalData();
+            render();
+            closeModal();
+        }
+
+        function editItem(id) {
+            openModal(id);
+        }
+
+        function deleteItem(id) {
+            deleteId = id;
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('active');
+            deleteId = null;
+        }
+
+        async function confirmDelete() {
+            if (deleteId) {
+                items = items.filter(i => i.id !== deleteId);
+                saveLocalData();
+                render();
+                
+                if (isConnected) await deleteFromSheetDB(deleteId);
+            }
+            closeDeleteModal();
+        }
+
+        function exportBackup() {
+            const backup = {
+                version: '3.0',
+                exportDate: new Date().toISOString(),
+                nextId: nextId,
+                items: items
+            };
+            downloadFile(JSON.stringify(backup, null, 2), 'jones_backup.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (!backup.items || !Array.isArray(backup.items)) {
+                        throw new Error('Invalid format');
+                    }
+                    
+                    if (!confirm(`Import ${backup.items.length} items? This replaces current data.`)) return;
+                    
+                    items = backup.items;
+                    nextId = backup.nextId || Math.max(...items.map(i => i.id), 9999) + 1;
+                    
+                    saveLocalData();
+                    render();
+                    
+                    if (isConnected) await syncToSheetDB();
+                    
+                    alert('Import successful!');
+                } catch (err) {
+                    alert('Import failed. Invalid file.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function showWIPMessage() {
+            alert('🚧 This feature is under development.\n\nAdd Item functionality will be available in the final version.');
+        }
+    </script>
+</body>
+</html>
