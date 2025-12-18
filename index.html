@@ -6,6 +6,7 @@
     <title>Jones</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" href="logo.png" type="image/png">
     <style>
         * {
@@ -278,6 +279,70 @@
             to { transform: rotate(360deg); }
         }
         
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+        
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+        
+        .nav-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-tab i {
+            font-size: 16px;
+        }
+        
+        .tab-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .nav-tab.active .tab-badge {
+            background: white;
+            color: var(--accent);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
         /* Main Dashboard Card */
         .dashboard-card {
             background: var(--bg-card);
@@ -330,45 +395,14 @@
             font-size: 16px;
         }
         
-        .stat-icon.blue {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-        }
-        
-        .stat-icon.purple {
-            background: var(--accent-soft);
-            color: var(--accent);
-        }
-        
-        .stat-icon.yellow {
-            background: var(--warning-soft);
-            color: var(--warning);
-        }
-        
-        .stat-icon.green {
-            background: var(--success-soft);
-            color: var(--success);
-        }
-        
-        .stat-icon.orange {
-            background: rgba(249, 115, 22, 0.15);
-            color: #fb923c;
-        }
-        
-        .stat-icon.teal {
-            background: rgba(20, 184, 166, 0.15);
-            color: #2dd4bf;
-        }
-        
-        .stat-icon.pink {
-            background: rgba(236, 72, 153, 0.15);
-            color: #f472b6;
-        }
-        
-        .stat-icon.gray {
-            background: rgba(107, 114, 128, 0.15);
-            color: #9ca3af;
-        }
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .stat-icon.purple { background: var(--accent-soft); color: var(--accent); }
+        .stat-icon.yellow { background: var(--warning-soft); color: var(--warning); }
+        .stat-icon.green { background: var(--success-soft); color: var(--success); }
+        .stat-icon.orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
+        .stat-icon.teal { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
+        .stat-icon.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+        .stat-icon.gray { background: rgba(107, 114, 128, 0.15); color: #9ca3af; }
         
         .stat-label {
             font-size: 15px;
@@ -389,13 +423,8 @@
             text-align: right;
         }
         
-        .stat-value.positive {
-            color: var(--success);
-        }
-        
-        .stat-value.negative {
-            color: var(--danger);
-        }
+        .stat-value.positive { color: var(--success); }
+        .stat-value.negative { color: var(--danger); }
         
         .stat-subvalue {
             font-size: 12px;
@@ -417,10 +446,12 @@
             padding: 20px 32px;
             border-bottom: 1px solid var(--border);
             background: var(--bg-elevated);
+            flex-wrap: wrap;
         }
         
         .search-box {
             flex: 1;
+            min-width: 200px;
             position: relative;
         }
         
@@ -544,6 +575,22 @@
             color: var(--text-muted);
             background: var(--bg-elevated);
             border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+        
+        .data-table th:hover {
+            color: var(--text-primary);
+        }
+        
+        .data-table th.sorted {
+            color: var(--accent);
+        }
+        
+        .data-table th i {
+            margin-left: 6px;
+            font-size: 10px;
         }
         
         .data-table td {
@@ -582,21 +629,10 @@
             flex-shrink: 0;
         }
         
-        .item-avatar.single {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-        
-        .item-avatar.graded {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-        
-        .item-avatar.sealed {
-            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-        }
-        
-        .item-avatar.other {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-        }
+        .item-avatar.single { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .item-avatar.graded { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .item-avatar.sealed { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .item-avatar.other { background: linear-gradient(135deg, #6b7280, #4b5563); }
         
         .item-info {
             min-width: 0;
@@ -626,25 +662,10 @@
             letter-spacing: 0.5px;
         }
         
-        .type-tag.single {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-        }
-        
-        .type-tag.graded {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-        }
-        
-        .type-tag.sealed {
-            background: rgba(139, 92, 246, 0.15);
-            color: #a78bfa;
-        }
-        
-        .type-tag.other {
-            background: rgba(107, 114, 128, 0.15);
-            color: #9ca3af;
-        }
+        .type-tag.single { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .type-tag.graded { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .type-tag.sealed { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        .type-tag.other { background: rgba(107, 114, 128, 0.15); color: #9ca3af; }
         
         .status-pill {
             display: inline-flex;
@@ -656,45 +677,17 @@
             font-weight: 500;
         }
         
-        .status-pill.sold {
-            background: var(--success-soft);
-            color: var(--success);
-        }
+        .status-pill.sold { background: var(--success-soft); color: var(--success); }
+        .status-pill.holding { background: var(--bg-input); color: var(--text-muted); }
+        .status-pill i { font-size: 10px; }
         
-        .status-pill.holding {
-            background: var(--bg-input);
-            color: var(--text-muted);
-        }
+        .price-cell { text-align: right; }
+        .price-main { color: var(--text-primary); font-weight: 500; }
+        .price-date { font-size: 12px; color: var(--text-muted); }
         
-        .status-pill i {
-            font-size: 10px;
-        }
-        
-        .price-cell {
-            text-align: right;
-        }
-        
-        .price-main {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-        
-        .price-date {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .profit-value {
-            font-weight: 600;
-        }
-        
-        .profit-value.positive {
-            color: var(--success);
-        }
-        
-        .profit-value.negative {
-            color: var(--danger);
-        }
+        .profit-value { font-weight: 600; }
+        .profit-value.positive { color: var(--success); }
+        .profit-value.negative { color: var(--danger); }
         
         .row-actions {
             display: flex;
@@ -756,6 +749,210 @@
             font-size: 14px;
         }
         
+        /* Analytics Tab */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 24px;
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .chart-card.full-width {
+            grid-column: span 2;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-title i {
+            color: var(--accent);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        .chart-container.tall {
+            height: 300px;
+        }
+        
+        /* Wishlist Tab */
+        .wishlist-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 32px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+        
+        .wishlist-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        
+        .wishlist-item:hover {
+            border-color: var(--accent);
+        }
+        
+        .wishlist-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .wishlist-item-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        
+        .wishlist-item-priority {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .wishlist-item-priority.high { background: var(--danger-soft); color: var(--danger); }
+        .wishlist-item-priority.medium { background: var(--warning-soft); color: var(--warning); }
+        .wishlist-item-priority.low { background: var(--success-soft); color: var(--success); }
+        
+        .wishlist-item-details {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .wishlist-item-notes {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        
+        .wishlist-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .wishlist-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .wishlist-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        
+        .wishlist-btn.convert {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .wishlist-btn.convert:hover {
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        
+        /* Toast / Undo */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-text {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .toast-undo {
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toast-undo:hover {
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+        
         /* Footer */
         .footer {
             text-align: center;
@@ -786,19 +983,6 @@
         .footer-logo-text {
             font-weight: 600;
             color: var(--text-secondary);
-        }
-        
-        .footer-copyright {
-            color: var(--text-muted);
-        }
-        
-        .footer-copyright a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        
-        .footer-copyright a:hover {
-            text-decoration: underline;
         }
         
         /* Modal */
@@ -1090,28 +1274,77 @@
             display: none;
         }
         
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 20px;
+            }
+            
+            .password-screen,
+            .top-bar,
+            .nav-tabs,
+            .controls-row,
+            .row-actions,
+            .modal-overlay,
+            .toast,
+            .footer,
+            .add-btn,
+            .icon-btn {
+                display: none !important;
+            }
+            
+            .app-container {
+                display: block !important;
+                max-width: 100%;
+            }
+            
+            .dashboard-card {
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+            
+            .dashboard-header {
+                background: #f9f9f9;
+            }
+            
+            .stat-icon {
+                background: #eee !important;
+                color: #333 !important;
+            }
+            
+            .stat-value, .stat-label {
+                color: #333 !important;
+            }
+            
+            .data-table th {
+                background: #f0f0f0;
+                color: #333;
+            }
+            
+            .data-table td {
+                color: #333;
+                border-color: #ddd;
+            }
+            
+            .type-tag, .status-pill {
+                border: 1px solid #ddd;
+            }
+            
+            .item-name, .price-main {
+                color: #333 !important;
+            }
+        }
+        
         /* Responsive */
         @media (max-width: 1000px) {
-            .dashboard-header {
+            .analytics-grid {
                 grid-template-columns: 1fr;
             }
             
-            .header-left {
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stat-item {
-                border-left: none;
-                border-bottom: 1px solid var(--border);
-            }
-            
-            .stat-item:last-child {
-                border-bottom: none;
+            .chart-card.full-width {
+                grid-column: span 1;
             }
         }
         
@@ -1124,6 +1357,10 @@
                 flex-direction: column;
                 gap: 16px;
                 align-items: flex-start;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
             }
             
             .controls-row {
@@ -1146,6 +1383,10 @@
             }
             
             .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wishlist-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1185,6 +1426,9 @@
                 <button class="icon-btn" id="sync-btn" onclick="syncData()" title="Sync Now">
                     <i class="fas fa-sync-alt"></i>
                 </button>
+                <button class="icon-btn" onclick="printView()" title="Print View">
+                    <i class="fas fa-print"></i>
+                </button>
                 <button class="icon-btn" onclick="exportBackup()" title="Backup JSON">
                     <i class="fas fa-download"></i>
                 </button>
@@ -1199,196 +1443,259 @@
         
         <input type="file" id="import-input" class="file-input" accept=".json" onchange="handleImport(event)">
         
-        <!-- Main Dashboard Card -->
-        <div class="dashboard-card">
-            <!-- Header with Stats - Vertical Layout -->
-            <div class="dashboard-header">
-                <div class="stats-list">
-                    <!-- Collection Overview -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon blue">
-                                <i class="fas fa-layer-group"></i>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('collection')">
+                <i class="fas fa-layer-group"></i>
+                Collection
+            </button>
+            <button class="nav-tab" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-pie"></i>
+                Analytics
+            </button>
+            <button class="nav-tab" onclick="switchTab('wishlist')">
+                <i class="fas fa-heart"></i>
+                Wishlist
+                <span class="tab-badge" id="wishlist-badge">0</span>
+            </button>
+        </div>
+        
+        <!-- Collection Tab -->
+        <div class="tab-content active" id="tab-collection">
+            <div class="dashboard-card">
+                <!-- Header with Stats -->
+                <div class="dashboard-header">
+                    <div class="stats-list">
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon blue"><i class="fas fa-layer-group"></i></div>
+                                <div>
+                                    <div class="stat-label">Collection Overview</div>
+                                    <div class="stat-sublabel"><span id="stat-sold-count">0</span> sold · <span id="stat-holding-count">0</span> holding</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Collection Overview</div>
-                                <div class="stat-sublabel"><span id="stat-sold-count">0</span> sold · <span id="stat-holding-count">0</span> holding</div>
+                                <div class="stat-value" id="stat-total">0</div>
+                                <div class="stat-subvalue">Total items</div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-total">0</div>
-                            <div class="stat-subvalue">Total items</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Investment -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon purple">
-                                <i class="fas fa-wallet"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon purple"><i class="fas fa-wallet"></i></div>
+                                <div>
+                                    <div class="stat-label">Investment</div>
+                                    <div class="stat-sublabel">All items</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Investment</div>
-                                <div class="stat-sublabel">All items</div>
+                                <div class="stat-value" id="stat-investment">0 kr</div>
+                                <div class="stat-subvalue">Total spent</div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-investment">0 kr</div>
-                            <div class="stat-subvalue">Total spent</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Current Value -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon yellow">
-                                <i class="fas fa-coins"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon yellow"><i class="fas fa-coins"></i></div>
+                                <div>
+                                    <div class="stat-label">Current Value</div>
+                                    <div class="stat-sublabel">Portfolio total</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Current Value</div>
-                                <div class="stat-sublabel">Portfolio total</div>
+                                <div class="stat-value" id="stat-value">0 kr</div>
+                                <div class="stat-subvalue">Market value</div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-value">0 kr</div>
-                            <div class="stat-subvalue">Market value</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Profit / Loss -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon green">
-                                <i class="fas fa-chart-line"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon green"><i class="fas fa-chart-line"></i></div>
+                                <div>
+                                    <div class="stat-label">Profit / Loss</div>
+                                    <div class="stat-sublabel">From sold items</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Profit / Loss</div>
-                                <div class="stat-sublabel">From sold items</div>
+                                <div class="stat-value" id="stat-profit">0 kr</div>
+                                <div class="stat-subvalue">ROI: <span id="stat-roi">0%</span></div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-profit">0 kr</div>
-                            <div class="stat-subvalue">ROI: <span id="stat-roi">0%</span></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Unsold Items Value -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon orange">
-                                <i class="fas fa-box"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon orange"><i class="fas fa-box"></i></div>
+                                <div>
+                                    <div class="stat-label">Unsold Items Value</div>
+                                    <div class="stat-sublabel">Holding portfolio</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Unsold Items Value</div>
-                                <div class="stat-sublabel">Holding portfolio</div>
+                                <div class="stat-value" id="stat-unsold-value">0 kr</div>
+                                <div class="stat-subvalue"><span id="stat-unsold-count">0</span> items in stock</div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-unsold-value">0 kr</div>
-                            <div class="stat-subvalue"><span id="stat-unsold-count">0</span> items in stock</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Average Profit per Sale -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon teal">
-                                <i class="fas fa-calculator"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon teal"><i class="fas fa-calculator"></i></div>
+                                <div>
+                                    <div class="stat-label">Average Profit</div>
+                                    <div class="stat-sublabel">Per sold item</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Average Profit</div>
-                                <div class="stat-sublabel">Per sold item</div>
+                                <div class="stat-value" id="stat-avg-profit">0 kr</div>
+                                <div class="stat-subvalue">Avg. sale: <span id="stat-avg-sale">0 kr</span></div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value" id="stat-avg-profit">0 kr</div>
-                            <div class="stat-subvalue">Avg. sale: <span id="stat-avg-sale">0 kr</span></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Best Sale -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon pink">
-                                <i class="fas fa-trophy"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon pink"><i class="fas fa-trophy"></i></div>
+                                <div>
+                                    <div class="stat-label">Best Sale</div>
+                                    <div class="stat-sublabel" id="stat-best-sale-name">No sales yet</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Best Sale</div>
-                                <div class="stat-sublabel" id="stat-best-sale-name">No sales yet</div>
+                                <div class="stat-value positive" id="stat-best-profit">0 kr</div>
+                                <div class="stat-subvalue">Highest profit</div>
                             </div>
                         </div>
-                        <div>
-                            <div class="stat-value positive" id="stat-best-profit">0 kr</div>
-                            <div class="stat-subvalue">Highest profit</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Type Breakdown -->
-                    <div class="stat-row">
-                        <div class="stat-left">
-                            <div class="stat-icon gray">
-                                <i class="fas fa-tags"></i>
+                        
+                        <div class="stat-row">
+                            <div class="stat-left">
+                                <div class="stat-icon gray"><i class="fas fa-tags"></i></div>
+                                <div>
+                                    <div class="stat-label">Collection Types</div>
+                                    <div class="stat-sublabel" id="stat-types-breakdown">No items</div>
+                                </div>
                             </div>
                             <div>
-                                <div class="stat-label">Collection Types</div>
-                                <div class="stat-sublabel" id="stat-types-breakdown">No items</div>
+                                <div class="stat-value" id="stat-graded-count">0</div>
+                                <div class="stat-subvalue">Graded cards</div>
                             </div>
-                        </div>
-                        <div>
-                            <div class="stat-value" id="stat-graded-count">0</div>
-                            <div class="stat-subvalue">Graded cards</div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Controls -->
-            <div class="controls-row">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" class="search-input" id="search-input" placeholder="Search by name, ID, or details...">
-                </div>
-                <div class="filter-group">
-                    <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all')">All</button>
-                    <button class="filter-btn" data-status="holding" onclick="setStatusFilter('holding')">Holding</button>
-                    <button class="filter-btn" data-status="sold" onclick="setStatusFilter('sold')">Sold</button>
-                </div>
-                <select class="filter-select" id="type-filter">
-                    <option value="all">All Types</option>
-                    <option value="Single">Single</option>
-                    <option value="Graded">Graded</option>
-                    <option value="Sealed">Sealed</option>
-                    <option value="Other">Other</option>
-                </select>
-                <button class="add-btn" onclick="openModal()">
-                    <i class="fas fa-plus"></i>
-                    Add Item
-                </button>
-            </div>
-            
-            <!-- Table -->
-            <div class="table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Type</th>
-                            <th>Purchase</th>
-                            <th>Sold</th>
-                            <th>Status</th>
-                            <th>Profit</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
                 
-                <div class="empty-state hidden" id="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-box-open"></i>
+                <!-- Controls -->
+                <div class="controls-row">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" id="search-input" placeholder="Search by name, ID, or details...">
                     </div>
-                    <div class="empty-title">No items yet</div>
-                    <div class="empty-text">Add your first item to get started</div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all')">All</button>
+                        <button class="filter-btn" data-status="holding" onclick="setStatusFilter('holding')">Holding</button>
+                        <button class="filter-btn" data-status="sold" onclick="setStatusFilter('sold')">Sold</button>
+                    </div>
+                    <select class="filter-select" id="type-filter">
+                        <option value="all">All Types</option>
+                        <option value="Single">Single</option>
+                        <option value="Graded">Graded</option>
+                        <option value="Sealed">Sealed</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select class="filter-select" id="sort-select" onchange="renderTable()">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                        <option value="price-desc">Price High-Low</option>
+                        <option value="price-asc">Price Low-High</option>
+                        <option value="profit-desc">Profit High-Low</option>
+                        <option value="profit-asc">Profit Low-High</option>
+                    </select>
+                    <button class="add-btn" onclick="openModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Item
+                    </button>
+                </div>
+                
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Type</th>
+                                <th>Purchase</th>
+                                <th>Sold</th>
+                                <th>Status</th>
+                                <th>Profit</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                    
+                    <div class="empty-state hidden" id="empty-state">
+                        <div class="empty-icon"><i class="fas fa-box-open"></i></div>
+                        <div class="empty-title">No items yet</div>
+                        <div class="empty-text">Add your first item to get started</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Tab -->
+        <div class="tab-content" id="tab-analytics">
+            <div class="analytics-grid">
+                <div class="chart-card full-width">
+                    <div class="chart-title"><i class="fas fa-chart-line"></i> Profit Over Time</div>
+                    <div class="chart-container tall">
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Portfolio by Type</div>
+                    <div class="chart-container">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-bar"></i> Monthly Sales</div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-doughnut"></i> Status Breakdown</div>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-money-bill-wave"></i> Investment vs Revenue</div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wishlist Tab -->
+        <div class="tab-content" id="tab-wishlist">
+            <div class="dashboard-card">
+                <div class="wishlist-controls">
+                    <h3 style="font-size: 18px; font-weight: 600;">My Wishlist</h3>
+                    <button class="add-btn" onclick="openWishlistModal()">
+                        <i class="fas fa-plus"></i>
+                        Add to Wishlist
+                    </button>
+                </div>
+                <div class="wishlist-grid" id="wishlist-grid">
+                    <div class="empty-state" id="wishlist-empty">
+                        <div class="empty-icon"><i class="fas fa-heart"></i></div>
+                        <div class="empty-title">Wishlist is empty</div>
+                        <div class="empty-text">Add items you want to buy</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1403,14 +1710,19 @@
         </footer>
     </div>
     
+    <!-- Toast for Undo -->
+    <div class="toast" id="toast">
+        <span class="toast-text" id="toast-text">Item deleted</span>
+        <button class="toast-undo" onclick="undoDelete()">Undo</button>
+        <button class="toast-close" onclick="hideToast()"><i class="fas fa-times"></i></button>
+    </div>
+    
     <!-- Add/Edit Modal -->
     <div class="modal-overlay" id="item-modal">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="modal-title">Add Item</h2>
-                <button class="modal-close" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <form id="item-form">
@@ -1447,7 +1759,6 @@
                     </div>
                     <input type="hidden" id="form-type" required>
                     
-                    <!-- Single Fields -->
                     <div class="conditional-fields" id="fields-single">
                         <div class="form-divider"></div>
                         <div class="form-grid">
@@ -1471,7 +1782,6 @@
                         </div>
                     </div>
                     
-                    <!-- Graded Fields -->
                     <div class="conditional-fields" id="fields-graded">
                         <div class="form-divider"></div>
                         <div class="form-grid">
@@ -1572,17 +1882,17 @@
                     
                     <div class="form-grid single">
                         <div class="form-group">
-                            <textarea class="form-textarea" id="form-description" maxlength="400" placeholder="Brief description of the item..."></textarea>
+                            <textarea class="form-textarea" id="form-description" maxlength="400" placeholder="Brief description..."></textarea>
                             <div class="char-counter"><span id="desc-count">0</span>/400</div>
                         </div>
                     </div>
                     
                     <div class="form-divider"></div>
-                    <div class="form-section-title">Extra Notes (Unlimited)</div>
+                    <div class="form-section-title">Extra Notes</div>
                     
                     <div class="form-grid single">
                         <div class="form-group">
-                            <textarea class="form-textarea extra-notes" id="form-extra-notes" maxlength="50000" placeholder="Add any additional notes, detailed information, history, etc..."></textarea>
+                            <textarea class="form-textarea extra-notes" id="form-extra-notes" maxlength="50000" placeholder="Additional notes..."></textarea>
                             <div class="char-counter"><span id="extra-notes-count">0</span>/50000</div>
                         </div>
                     </div>
@@ -1599,11 +1909,9 @@
     <div class="modal-overlay delete-modal" id="delete-modal">
         <div class="modal">
             <div class="modal-body" style="padding: 40px;">
-                <div class="delete-icon-wrap">
-                    <i class="fas fa-trash-alt"></i>
-                </div>
+                <div class="delete-icon-wrap"><i class="fas fa-trash-alt"></i></div>
                 <div class="delete-title">Delete this item?</div>
-                <div class="delete-text">This cannot be undone.</div>
+                <div class="delete-text">You can undo this action.</div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
@@ -1611,43 +1919,69 @@
             </div>
         </div>
     </div>
+    
+    <!-- Wishlist Modal -->
+    <div class="modal-overlay" id="wishlist-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="wishlist-modal-title">Add to Wishlist</h2>
+                <button class="modal-close" onclick="closeWishlistModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="wishlist-form">
+                    <input type="hidden" id="wishlist-form-id">
+                    
+                    <div class="form-grid single">
+                        <div class="form-group">
+                            <label class="form-label">Item Name <span class="req">*</span></label>
+                            <input type="text" class="form-input" id="wishlist-form-name" placeholder="e.g., Charizard PSA 10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Target Price (NOK)</label>
+                            <input type="number" class="form-input" id="wishlist-form-price" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="wishlist-form-priority">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid single" style="margin-top: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-textarea" id="wishlist-form-notes" placeholder="Why you want this item..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeWishlistModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveWishlistItem()">Save</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // ============================================
-        // CONFIGURATION - Your Own Google Apps Script API
-        // ============================================
+        // Configuration
         var API_URL = 'https://script.google.com/macros/s/AKfycbxOvZVUfzesvVA6dUHV5UlFhmBrLUGUMmdqeDqgYGztl4dhLjST8D8d_t7Yk2Yuy-B4/exec';
-        
-        // Password Protection
         var CORRECT_PASSWORD = "Jonas@123";
         
-        function checkPassword() {
-            var input = document.getElementById('password-input').value;
-            var errorEl = document.getElementById('password-error');
-            
-            if (input === CORRECT_PASSWORD) {
-                document.getElementById('password-screen').style.display = 'none';
-                document.getElementById('app-container').classList.add('visible');
-                initApp();
-            } else {
-                errorEl.classList.add('show');
-                setTimeout(function() {
-                    window.location.href = 'https://google.com';
-                }, 1500);
-            }
-        }
-        
-        document.getElementById('password-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-
         // State
         var items = [];
+        var wishlist = [];
         var nextId = 10000;
+        var nextWishlistId = 1;
         var editingId = null;
+        var editingWishlistId = null;
         var deleteId = null;
+        var deletedItem = null;
         var statusFilter = 'all';
         var isSyncing = false;
         var hasUnsyncedChanges = false;
@@ -1655,29 +1989,38 @@
         var refreshInterval = null;
         var countdownInterval = null;
         var nextSyncTime = null;
+        var toastTimeout = null;
+        var charts = {};
         
-        // Auto-sync configuration (in seconds)
         var AUTO_SYNC_DELAY = 30;
         var AUTO_REFRESH_DELAY = 120;
 
-        // Check if API is configured
-        function isAPIConfigured() {
-            return API_URL && API_URL.trim() !== '';
+        // Password
+        function checkPassword() {
+            var input = document.getElementById('password-input').value;
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('app-container').classList.add('visible');
+                initApp();
+            } else {
+                document.getElementById('password-error').classList.add('show');
+                setTimeout(function() { window.location.href = 'https://google.com'; }, 1500);
+            }
         }
+        
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
 
-        // Init App after password
+        function isAPIConfigured() { return API_URL && API_URL.trim() !== ''; }
+
         function initApp() {
             loadLocalData();
-            
-            if (items.length === 0 && !isAPIConfigured()) {
-                loadSampleData();
-            }
-            
+            if (items.length === 0 && !isAPIConfigured()) loadSampleData();
             render();
             setupListeners();
             updateSyncStatus();
-            
-            // Auto-sync on load if API is configured
+            updateWishlistBadge();
             if (isAPIConfigured()) {
                 syncFromAPI();
                 startAutoRefresh();
@@ -1688,31 +2031,31 @@
             try {
                 var stored = localStorage.getItem('jones_items');
                 var storedId = localStorage.getItem('jones_nextId');
+                var storedWishlist = localStorage.getItem('jones_wishlist');
+                var storedWishlistId = localStorage.getItem('jones_nextWishlistId');
                 if (stored) items = JSON.parse(stored);
                 if (storedId) nextId = parseInt(storedId);
-            } catch (e) {
-                console.error('Load error:', e);
-            }
+                if (storedWishlist) wishlist = JSON.parse(storedWishlist);
+                if (storedWishlistId) nextWishlistId = parseInt(storedWishlistId);
+            } catch (e) { console.error('Load error:', e); }
         }
 
         function saveLocalData() {
             try {
                 localStorage.setItem('jones_items', JSON.stringify(items));
                 localStorage.setItem('jones_nextId', nextId.toString());
-            } catch (e) {
-                console.error('Save error:', e);
-            }
+                localStorage.setItem('jones_wishlist', JSON.stringify(wishlist));
+                localStorage.setItem('jones_nextWishlistId', nextWishlistId.toString());
+            } catch (e) { console.error('Save error:', e); }
         }
 
         function updateSyncStatus() {
             var dot = document.getElementById('sync-dot');
             var text = document.getElementById('sync-text');
             var timer = document.getElementById('sync-timer');
-            
             if (!dot || !text) return;
             
             dot.classList.remove('connected', 'syncing', 'error');
-            
             if (!isAPIConfigured()) {
                 dot.classList.add('error');
                 text.textContent = 'Not Configured';
@@ -1732,60 +2075,31 @@
         
         function updateCountdown() {
             var timer = document.getElementById('sync-timer');
-            if (!timer) return;
-            
-            if (!nextSyncTime || isSyncing) {
-                timer.textContent = '';
-                return;
-            }
-            
+            if (!timer || !nextSyncTime || isSyncing) { if (timer) timer.textContent = ''; return; }
             var remaining = Math.max(0, Math.ceil((nextSyncTime - Date.now()) / 1000));
-            if (remaining > 0 && hasUnsyncedChanges) {
-                timer.textContent = '(' + remaining + 's)';
-            } else {
-                timer.textContent = '';
-            }
+            timer.textContent = remaining > 0 && hasUnsyncedChanges ? '(' + remaining + 's)' : '';
         }
         
         function scheduleAutoSync() {
             if (!isAPIConfigured()) return;
-            
-            if (autoSyncInterval) {
-                clearTimeout(autoSyncInterval);
-            }
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
+            if (autoSyncInterval) clearTimeout(autoSyncInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
             nextSyncTime = Date.now() + (AUTO_SYNC_DELAY * 1000);
-            
             countdownInterval = setInterval(updateCountdown, 1000);
             updateCountdown();
-            
             autoSyncInterval = setTimeout(function() {
-                if (hasUnsyncedChanges && !isSyncing) {
-                    syncToAPI();
-                    hasUnsyncedChanges = false;
-                }
+                if (hasUnsyncedChanges && !isSyncing) { syncToAPI(); hasUnsyncedChanges = false; }
                 nextSyncTime = null;
                 updateCountdown();
-                if (countdownInterval) {
-                    clearInterval(countdownInterval);
-                }
+                if (countdownInterval) clearInterval(countdownInterval);
             }, AUTO_SYNC_DELAY * 1000);
         }
         
         function startAutoRefresh() {
             if (!isAPIConfigured()) return;
-            
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
-            
+            if (refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(function() {
-                if (!isSyncing && !hasUnsyncedChanges) {
-                    syncFromAPI();
-                }
+                if (!isSyncing && !hasUnsyncedChanges) syncFromAPI();
             }, AUTO_REFRESH_DELAY * 1000);
         }
         
@@ -1797,197 +2111,82 @@
 
         function loadSampleData() {
             items = [
-                {
-                    id: nextId++,
-                    item_name: "Charizard Base Set 1st Edition",
-                    type: "Graded",
-                    purchase_price_nok: 45000,
-                    purchase_date: "2023-06-15",
-                    payment_method_buy: "Bank transfer",
-                    purchase_location: "eBay",
-                    sell_price_nok: 62000,
-                    sell_date: "2024-01-20",
-                    payment_method_sell: "Vipps",
-                    sell_location: "Facebook",
-                    description: "Holy grail card",
-                    extra_notes: "",
-                    grading_company: "PSA",
-                    grade: "9",
-                    cert_number: "48573921"
-                },
-                {
-                    id: nextId++,
-                    item_name: "Pikachu Illustrator Promo",
-                    type: "Graded",
-                    purchase_price_nok: 125000,
-                    purchase_date: "2023-09-01",
-                    payment_method_buy: "PayPal",
-                    purchase_location: "Private Collector",
-                    description: "Ultra rare promo",
-                    extra_notes: "",
-                    grading_company: "CGC",
-                    grade: "8.5",
-                    cert_number: "CGC-9876543"
-                },
-                {
-                    id: nextId++,
-                    item_name: "Pokemon 151 Booster Box",
-                    type: "Sealed",
-                    purchase_price_nok: 1899,
-                    purchase_date: "2023-11-10",
-                    payment_method_buy: "Card",
-                    purchase_location: "Ark.no",
-                    sell_price_nok: 2850,
-                    sell_date: "2024-02-15",
-                    payment_method_sell: "Vipps",
-                    sell_location: "Facebook"
-                },
-                {
-                    id: nextId++,
-                    item_name: "Blastoise Base Set Holo",
-                    type: "Single",
-                    purchase_price_nok: 2500,
-                    purchase_date: "2023-08-20",
-                    payment_method_buy: "Vipps",
-                    purchase_location: "Finn.no",
-                    description: "Clean corners",
-                    extra_notes: "",
-                    card_number: "2/102",
-                    condition: "NM"
-                },
-                {
-                    id: nextId++,
-                    item_name: "Scarlet & Violet ETB",
-                    type: "Sealed",
-                    purchase_price_nok: 649,
-                    purchase_date: "2024-01-05",
-                    payment_method_buy: "Card",
-                    purchase_location: "Platekompaniet"
-                }
+                { id: nextId++, item_name: "Charizard Base Set 1st Edition", type: "Graded", purchase_price_nok: 45000, purchase_date: "2023-06-15", payment_method_buy: "Bank transfer", purchase_location: "eBay", sell_price_nok: 62000, sell_date: "2024-01-20", payment_method_sell: "Vipps", sell_location: "Facebook", description: "Holy grail card", grading_company: "PSA", grade: "9", cert_number: "48573921" },
+                { id: nextId++, item_name: "Pikachu Illustrator Promo", type: "Graded", purchase_price_nok: 125000, purchase_date: "2023-09-01", payment_method_buy: "PayPal", purchase_location: "Private Collector", description: "Ultra rare promo", grading_company: "CGC", grade: "8.5", cert_number: "CGC-9876543" },
+                { id: nextId++, item_name: "Pokemon 151 Booster Box", type: "Sealed", purchase_price_nok: 1899, purchase_date: "2023-11-10", payment_method_buy: "Card", purchase_location: "Ark.no", sell_price_nok: 2850, sell_date: "2024-02-15", payment_method_sell: "Vipps", sell_location: "Facebook" },
+                { id: nextId++, item_name: "Blastoise Base Set Holo", type: "Single", purchase_price_nok: 2500, purchase_date: "2023-08-20", payment_method_buy: "Vipps", purchase_location: "Finn.no", description: "Clean corners", card_number: "2/102", condition: "NM" },
+                { id: nextId++, item_name: "Scarlet & Violet ETB", type: "Sealed", purchase_price_nok: 649, purchase_date: "2024-01-05", payment_method_buy: "Card", purchase_location: "Platekompaniet" }
+            ];
+            wishlist = [
+                { id: nextWishlistId++, name: "Charizard PSA 10", target_price: 100000, priority: "high", notes: "Dream card" }
             ];
             saveLocalData();
         }
 
-        // ============================================
-        // Google Apps Script API Functions
-        // ============================================
-        
+        // API Functions
         function syncFromAPI() {
             if (!isAPIConfigured() || isSyncing) return;
-            
             isSyncing = true;
             updateSyncStatus();
             var syncBtn = document.getElementById('sync-btn');
             if (syncBtn) syncBtn.classList.add('syncing');
             
-            fetch(API_URL + '?action=getAll', {
-                method: 'GET',
-                redirect: 'follow'
-            })
-            .then(function(response) { 
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json(); 
-            })
+            fetch(API_URL + '?action=getAll', { method: 'GET', redirect: 'follow' })
+            .then(function(r) { if (!r.ok) throw new Error('Network error'); return r.json(); })
             .then(function(data) {
                 if (Array.isArray(data)) {
                     items = data.map(function(row) {
                         return {
-                            id: parseInt(row.id) || nextId++,
-                            item_name: row.item_name || '',
-                            type: row.type || 'Other',
-                            purchase_price_nok: parseFloat(row.purchase_price_nok) || 0,
-                            purchase_date: row.purchase_date || null,
-                            payment_method_buy: row.payment_method_buy || null,
-                            purchase_location: row.purchase_location || null,
-                            sell_price_nok: parseFloat(row.sell_price_nok) || null,
-                            sell_date: row.sell_date || null,
-                            payment_method_sell: row.payment_method_sell || null,
-                            sell_location: row.sell_location || null,
-                            description: row.description || null,
-                            extra_notes: row.extra_notes || null,
-                            card_number: row.card_number || null,
-                            condition: row.condition || null,
-                            grading_company: row.grading_company || null,
-                            grade: row.grade || null,
-                            cert_number: row.cert_number || null,
-                            graded_card_number: row.graded_card_number || null
+                            id: parseInt(row.id) || nextId++, item_name: row.item_name || '', type: row.type || 'Other',
+                            purchase_price_nok: parseFloat(row.purchase_price_nok) || 0, purchase_date: row.purchase_date || null,
+                            payment_method_buy: row.payment_method_buy || null, purchase_location: row.purchase_location || null,
+                            sell_price_nok: parseFloat(row.sell_price_nok) || null, sell_date: row.sell_date || null,
+                            payment_method_sell: row.payment_method_sell || null, sell_location: row.sell_location || null,
+                            description: row.description || null, extra_notes: row.extra_notes || null,
+                            card_number: row.card_number || null, condition: row.condition || null,
+                            grading_company: row.grading_company || null, grade: row.grade || null,
+                            cert_number: row.cert_number || null, graded_card_number: row.graded_card_number || null
                         };
                     }).filter(function(item) { return item.item_name; });
-                    
                     var maxId = Math.max.apply(null, items.map(function(i) { return i.id || 0; }).concat([9999]));
                     nextId = maxId + 1;
-                    
                     saveLocalData();
                     render();
-                    console.log('Synced ' + items.length + ' items from Google Sheets');
-                } else if (data.error) {
-                    console.error('API Error:', data.error);
                 }
             })
-            .catch(function(err) {
-                console.error('Sync error:', err);
-            })
+            .catch(function(err) { console.error('Sync error:', err); })
             .then(function() {
                 isSyncing = false;
                 updateSyncStatus();
-                var syncBtn = document.getElementById('sync-btn');
                 if (syncBtn) syncBtn.classList.remove('syncing');
             });
         }
 
         function syncToAPI() {
             if (!isAPIConfigured() || isSyncing) return;
-            
             isSyncing = true;
             updateSyncStatus();
             var syncBtn = document.getElementById('sync-btn');
             if (syncBtn) syncBtn.classList.add('syncing');
             
-            fetch(API_URL + '?action=save', {
-                method: 'POST',
-                redirect: 'follow',
-                headers: { 
-                    'Content-Type': 'text/plain'
-                },
-                body: JSON.stringify(items)
-            })
-            .then(function(response) { 
-                return response.json(); 
-            })
+            fetch(API_URL + '?action=save', { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(items) })
+            .then(function(r) { return r.json(); })
             .then(function(result) {
-                if (result.error) {
-                    console.error('Sync error:', result.error);
-                    alert('Sync failed: ' + result.error);
-                } else if (result.success) {
-                    console.log('Successfully synced ' + (result.count || items.length) + ' items to Google Sheets');
-                }
+                if (result.error) { console.error('Sync error:', result.error); alert('Sync failed: ' + result.error); }
             })
-            .catch(function(err) {
-                console.error('Sync error:', err);
-                alert('Sync failed! Check your connection.');
-            })
+            .catch(function(err) { console.error('Sync error:', err); alert('Sync failed!'); })
             .then(function() {
                 isSyncing = false;
                 updateSyncStatus();
-                var syncBtn = document.getElementById('sync-btn');
                 if (syncBtn) syncBtn.classList.remove('syncing');
             });
         }
 
         function syncData() {
-            if (!isAPIConfigured()) {
-                alert('API is not configured. Please add your Google Apps Script URL in the code.');
-                return;
-            }
-            
-            if (autoSyncInterval) {
-                clearTimeout(autoSyncInterval);
-            }
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
+            if (!isAPIConfigured()) { alert('API not configured.'); return; }
+            if (autoSyncInterval) clearTimeout(autoSyncInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
             nextSyncTime = null;
-            
             syncToAPI();
             hasUnsyncedChanges = false;
             updateSyncStatus();
@@ -1995,91 +2194,61 @@
 
         function setupListeners() {
             var searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.addEventListener('input', render);
-            
+            if (searchInput) searchInput.addEventListener('input', renderTable);
             var typeFilter = document.getElementById('type-filter');
-            if (typeFilter) typeFilter.addEventListener('change', render);
+            if (typeFilter) typeFilter.addEventListener('change', renderTable);
             
             var formName = document.getElementById('form-name');
-            if (formName) {
-                formName.addEventListener('input', function(e) {
-                    document.getElementById('name-count').textContent = e.target.value.length;
-                });
-            }
-            
+            if (formName) formName.addEventListener('input', function(e) { document.getElementById('name-count').textContent = e.target.value.length; });
             var formDesc = document.getElementById('form-description');
-            if (formDesc) {
-                formDesc.addEventListener('input', function(e) {
-                    document.getElementById('desc-count').textContent = e.target.value.length;
-                });
-            }
-            
+            if (formDesc) formDesc.addEventListener('input', function(e) { document.getElementById('desc-count').textContent = e.target.value.length; });
             var formNotes = document.getElementById('form-extra-notes');
-            if (formNotes) {
-                formNotes.addEventListener('input', function(e) {
-                    document.getElementById('extra-notes-count').textContent = e.target.value.length;
-                });
-            }
+            if (formNotes) formNotes.addEventListener('input', function(e) { document.getElementById('extra-notes-count').textContent = e.target.value.length; });
             
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    closeDeleteModal();
-                }
+                if (e.key === 'Escape') { closeModal(); closeDeleteModal(); closeWishlistModal(); }
             });
+        }
+
+        // Tab Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+            event.target.closest('.nav-tab').classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+            if (tab === 'analytics') renderCharts();
+            if (tab === 'wishlist') renderWishlist();
         }
 
         function setStatusFilter(status) {
             statusFilter = status;
-            document.querySelectorAll('.filter-btn').forEach(function(btn) {
-                btn.classList.toggle('active', btn.dataset.status === status);
-            });
-            render();
-        }
-
-        function render() {
-            updateStats();
+            document.querySelectorAll('.filter-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.status === status); });
             renderTable();
         }
+
+        function render() { updateStats(); renderTable(); }
 
         function updateStats() {
             var sold = items.filter(function(i) { return i.sell_price_nok || i.sell_date; });
             var holding = items.filter(function(i) { return !i.sell_price_nok && !i.sell_date; });
-            
             var investment = items.reduce(function(sum, i) { return sum + (i.purchase_price_nok || 0); }, 0);
-            
-            var value = items.reduce(function(sum, i) {
-                return sum + (i.sell_price_nok || i.purchase_price_nok || 0);
-            }, 0);
-            
-            var profit = sold.reduce(function(sum, i) {
-                return sum + ((i.sell_price_nok || 0) - (i.purchase_price_nok || 0));
-            }, 0);
-            
+            var value = items.reduce(function(sum, i) { return sum + (i.sell_price_nok || i.purchase_price_nok || 0); }, 0);
+            var profit = sold.reduce(function(sum, i) { return sum + ((i.sell_price_nok || 0) - (i.purchase_price_nok || 0)); }, 0);
             var soldInvestment = sold.reduce(function(sum, i) { return sum + (i.purchase_price_nok || 0); }, 0);
             var roi = soldInvestment > 0 ? ((profit / soldInvestment) * 100).toFixed(1) : 0;
-            
             var unsoldValue = holding.reduce(function(sum, i) { return sum + (i.purchase_price_nok || 0); }, 0);
             var avgProfit = sold.length > 0 ? Math.round(profit / sold.length) : 0;
             var totalSaleValue = sold.reduce(function(sum, i) { return sum + (i.sell_price_nok || 0); }, 0);
             var avgSale = sold.length > 0 ? Math.round(totalSaleValue / sold.length) : 0;
             
-            var bestSale = null;
-            var bestProfit = 0;
+            var bestSale = null, bestProfit = 0;
             sold.forEach(function(item) {
-                var itemProfit = (item.sell_price_nok || 0) - (item.purchase_price_nok || 0);
-                if (itemProfit > bestProfit) {
-                    bestProfit = itemProfit;
-                    bestSale = item;
-                }
+                var p = (item.sell_price_nok || 0) - (item.purchase_price_nok || 0);
+                if (p > bestProfit) { bestProfit = p; bestSale = item; }
             });
             
             var types = { Single: 0, Graded: 0, Sealed: 0, Other: 0 };
-            items.forEach(function(i) {
-                if (types.hasOwnProperty(i.type)) {
-                    types[i.type]++;
-                }
-            });
+            items.forEach(function(i) { if (types.hasOwnProperty(i.type)) types[i.type]++; });
             
             var el;
             el = document.getElementById('stat-total'); if (el) el.textContent = items.length;
@@ -2108,8 +2277,7 @@
             if (bestSale) {
                 el = document.getElementById('stat-best-sale-name');
                 if (el) el.textContent = bestSale.item_name.length > 30 ? bestSale.item_name.substring(0, 30) + '...' : bestSale.item_name;
-                el = document.getElementById('stat-best-profit');
-                if (el) el.textContent = '+' + bestProfit.toLocaleString() + ' kr';
+                el = document.getElementById('stat-best-profit'); if (el) el.textContent = '+' + bestProfit.toLocaleString() + ' kr';
             } else {
                 el = document.getElementById('stat-best-sale-name'); if (el) el.textContent = 'No sales yet';
                 el = document.getElementById('stat-best-profit'); if (el) el.textContent = '—';
@@ -2120,47 +2288,53 @@
             if (types.Graded > 0) typeBreakdown.push(types.Graded + ' Graded');
             if (types.Sealed > 0) typeBreakdown.push(types.Sealed + ' Sealed');
             if (types.Other > 0) typeBreakdown.push(types.Other + ' Other');
-            el = document.getElementById('stat-types-breakdown');
-            if (el) el.textContent = typeBreakdown.length > 0 ? typeBreakdown.join(' · ') : 'No items';
+            el = document.getElementById('stat-types-breakdown'); if (el) el.textContent = typeBreakdown.length > 0 ? typeBreakdown.join(' · ') : 'No items';
             el = document.getElementById('stat-graded-count'); if (el) el.textContent = types.Graded;
         }
 
         function renderTable() {
             var searchEl = document.getElementById('search-input');
             var typeEl = document.getElementById('type-filter');
+            var sortEl = document.getElementById('sort-select');
             var search = searchEl ? searchEl.value.toLowerCase() : '';
             var type = typeEl ? typeEl.value : 'all';
+            var sort = sortEl ? sortEl.value : 'date-desc';
             
             var filtered = items.filter(function(item) {
                 var isSold = item.sell_price_nok || item.sell_date;
-                
                 if (statusFilter === 'sold' && !isSold) return false;
                 if (statusFilter === 'holding' && isSold) return false;
                 if (type !== 'all' && item.type !== type) return false;
-                
                 if (search) {
-                    var fields = [
-                        item.id ? item.id.toString() : '',
-                        item.item_name || '',
-                        item.card_number || '',
-                        item.graded_card_number || '',
-                        item.grading_company || '',
-                        item.cert_number || '',
-                        item.description || '',
-                        item.extra_notes || '',
-                        item.purchase_location || '',
-                        item.sell_location || ''
-                    ].join(' ').toLowerCase();
-                    
+                    var fields = [item.id ? item.id.toString() : '', item.item_name || '', item.card_number || '', item.graded_card_number || '', item.grading_company || '', item.cert_number || '', item.description || '', item.extra_notes || '', item.purchase_location || '', item.sell_location || ''].join(' ').toLowerCase();
                     if (fields.indexOf(search) === -1) return false;
                 }
-                
                 return true;
+            });
+            
+            // Sort
+            filtered.sort(function(a, b) {
+                switch(sort) {
+                    case 'date-desc': return new Date(b.purchase_date || 0) - new Date(a.purchase_date || 0);
+                    case 'date-asc': return new Date(a.purchase_date || 0) - new Date(b.purchase_date || 0);
+                    case 'name-asc': return (a.item_name || '').localeCompare(b.item_name || '');
+                    case 'name-desc': return (b.item_name || '').localeCompare(a.item_name || '');
+                    case 'price-desc': return (b.purchase_price_nok || 0) - (a.purchase_price_nok || 0);
+                    case 'price-asc': return (a.purchase_price_nok || 0) - (b.purchase_price_nok || 0);
+                    case 'profit-desc':
+                        var pa = (a.sell_price_nok || 0) - (a.purchase_price_nok || 0);
+                        var pb = (b.sell_price_nok || 0) - (b.purchase_price_nok || 0);
+                        return pb - pa;
+                    case 'profit-asc':
+                        var pa2 = (a.sell_price_nok || 0) - (a.purchase_price_nok || 0);
+                        var pb2 = (b.sell_price_nok || 0) - (b.purchase_price_nok || 0);
+                        return pa2 - pb2;
+                    default: return 0;
+                }
             });
             
             var tbody = document.getElementById('table-body');
             var empty = document.getElementById('empty-state');
-            
             if (!tbody) return;
             
             if (filtered.length === 0) {
@@ -2168,7 +2342,6 @@
                 if (empty) empty.classList.remove('hidden');
                 return;
             }
-            
             if (empty) empty.classList.add('hidden');
             
             var typeIcons = { Single: '🎴', Graded: '⭐', Sealed: '📦', Other: '📎' };
@@ -2176,63 +2349,15 @@
             tbody.innerHTML = filtered.map(function(item) {
                 var isSold = item.sell_price_nok || item.sell_date;
                 var profit = isSold ? (item.sell_price_nok || 0) - (item.purchase_price_nok || 0) : null;
-                
                 var meta = '#' + item.id;
-                if (item.type === 'Graded' && item.grading_company) {
-                    meta += ' · ' + item.grading_company + ' ' + (item.grade || '');
-                } else if (item.type === 'Single' && item.card_number) {
-                    meta += ' · ' + item.card_number;
-                }
-                if (item.purchase_location) {
-                    meta += ' · ' + item.purchase_location;
-                }
+                if (item.type === 'Graded' && item.grading_company) meta += ' · ' + item.grading_company + ' ' + (item.grade || '');
+                else if (item.type === 'Single' && item.card_number) meta += ' · ' + item.card_number;
+                if (item.purchase_location) meta += ' · ' + item.purchase_location;
                 
-                var soldInfo = '';
-                if (isSold) {
-                    soldInfo = '<div class="price-main">' + (item.sell_price_nok ? item.sell_price_nok.toLocaleString() : '0') + ' kr</div>' +
-                        '<div class="price-date">' + formatDate(item.sell_date) + (item.sell_location ? ' · ' + item.sell_location : '') + '</div>';
-                } else {
-                    soldInfo = '<span class="item-meta">—</span>';
-                }
+                var soldInfo = isSold ? '<div class="price-main">' + (item.sell_price_nok ? item.sell_price_nok.toLocaleString() : '0') + ' kr</div><div class="price-date">' + formatDate(item.sell_date) + (item.sell_location ? ' · ' + item.sell_location : '') + '</div>' : '<span class="item-meta">—</span>';
+                var profitInfo = profit !== null ? '<span class="profit-value ' + (profit >= 0 ? 'positive' : 'negative') + '">' + (profit >= 0 ? '+' : '') + profit.toLocaleString() + ' kr</span>' : '<span class="item-meta">—</span>';
                 
-                var profitInfo = '';
-                if (profit !== null) {
-                    profitInfo = '<span class="profit-value ' + (profit >= 0 ? 'positive' : 'negative') + '">' +
-                        (profit >= 0 ? '+' : '') + profit.toLocaleString() + ' kr</span>';
-                } else {
-                    profitInfo = '<span class="item-meta">—</span>';
-                }
-                
-                return '<tr>' +
-                    '<td>' +
-                        '<div class="item-cell">' +
-                            '<div class="item-avatar ' + item.type.toLowerCase() + '">' + typeIcons[item.type] + '</div>' +
-                            '<div class="item-info">' +
-                                '<div class="item-name">' + item.item_name + '</div>' +
-                                '<div class="item-meta">' + meta + '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</td>' +
-                    '<td><span class="type-tag ' + item.type.toLowerCase() + '">' + item.type + '</span></td>' +
-                    '<td class="price-cell">' +
-                        '<div class="price-main">' + (item.purchase_price_nok ? item.purchase_price_nok.toLocaleString() : '0') + ' kr</div>' +
-                        '<div class="price-date">' + formatDate(item.purchase_date) + '</div>' +
-                    '</td>' +
-                    '<td class="price-cell">' + soldInfo + '</td>' +
-                    '<td>' +
-                        '<span class="status-pill ' + (isSold ? 'sold' : 'holding') + '">' +
-                            '<i class="fas fa-' + (isSold ? 'check-circle' : 'clock') + '"></i> ' +
-                            (isSold ? 'Sold' : 'Holding') +
-                        '</span>' +
-                    '</td>' +
-                    '<td>' + profitInfo + '</td>' +
-                    '<td>' +
-                        '<div class="row-actions">' +
-                            '<button class="row-btn" onclick="editItem(' + item.id + ')" title="Edit"><i class="fas fa-pen"></i></button>' +
-                            '<button class="row-btn delete" onclick="deleteItem(' + item.id + ')" title="Delete"><i class="fas fa-trash"></i></button>' +
-                        '</div>' +
-                    '</td>' +
-                '</tr>';
+                return '<tr><td><div class="item-cell"><div class="item-avatar ' + item.type.toLowerCase() + '">' + typeIcons[item.type] + '</div><div class="item-info"><div class="item-name">' + item.item_name + '</div><div class="item-meta">' + meta + '</div></div></div></td><td><span class="type-tag ' + item.type.toLowerCase() + '">' + item.type + '</span></td><td class="price-cell"><div class="price-main">' + (item.purchase_price_nok ? item.purchase_price_nok.toLocaleString() : '0') + ' kr</div><div class="price-date">' + formatDate(item.purchase_date) + '</div></td><td class="price-cell">' + soldInfo + '</td><td><span class="status-pill ' + (isSold ? 'sold' : 'holding') + '"><i class="fas fa-' + (isSold ? 'check-circle' : 'clock') + '"></i> ' + (isSold ? 'Sold' : 'Holding') + '</span></td><td>' + profitInfo + '</td><td><div class="row-actions"><button class="row-btn" onclick="editItem(' + item.id + ')" title="Edit"><i class="fas fa-pen"></i></button><button class="row-btn delete" onclick="deleteItem(' + item.id + ')" title="Delete"><i class="fas fa-trash"></i></button></div></td></tr>';
             }).join('');
         }
 
@@ -2243,40 +2368,199 @@
             return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
         }
 
-        function selectType(type) {
-            document.querySelectorAll('.type-card').forEach(function(card) {
-                card.classList.toggle('selected', card.dataset.type === type);
-            });
-            document.getElementById('form-type').value = type;
+        // Charts
+        function renderCharts() {
+            var sold = items.filter(function(i) { return i.sell_date; });
+            var holding = items.filter(function(i) { return !i.sell_price_nok && !i.sell_date; });
             
-            var single = document.getElementById('fields-single');
-            var graded = document.getElementById('fields-graded');
-            if (single) single.classList.toggle('visible', type === 'Single');
-            if (graded) graded.classList.toggle('visible', type === 'Graded');
+            // Destroy existing charts
+            Object.keys(charts).forEach(function(key) { if (charts[key]) charts[key].destroy(); });
+            
+            // Profit Over Time
+            var profitData = {};
+            sold.forEach(function(item) {
+                var month = item.sell_date.substring(0, 7);
+                var profit = (item.sell_price_nok || 0) - (item.purchase_price_nok || 0);
+                profitData[month] = (profitData[month] || 0) + profit;
+            });
+            var sortedMonths = Object.keys(profitData).sort();
+            var cumulativeProfit = [];
+            var runningTotal = 0;
+            sortedMonths.forEach(function(m) { runningTotal += profitData[m]; cumulativeProfit.push(runningTotal); });
+            
+            var ctx1 = document.getElementById('profitChart');
+            if (ctx1) {
+                charts.profit = new Chart(ctx1, {
+                    type: 'line',
+                    data: { labels: sortedMonths, datasets: [{ label: 'Cumulative Profit', data: cumulativeProfit, borderColor: '#34d399', backgroundColor: 'rgba(52, 211, 153, 0.1)', fill: true, tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } }, x: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } } } }
+                });
+            }
+            
+            // Type Distribution
+            var types = { Single: 0, Graded: 0, Sealed: 0, Other: 0 };
+            items.forEach(function(i) { if (types.hasOwnProperty(i.type)) types[i.type]++; });
+            var ctx2 = document.getElementById('typeChart');
+            if (ctx2) {
+                charts.type = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: { labels: Object.keys(types), datasets: [{ data: Object.values(types), backgroundColor: ['#3b82f6', '#f59e0b', '#8b5cf6', '#6b7280'] }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#9394a3' } } } }
+                });
+            }
+            
+            // Monthly Sales
+            var salesData = {};
+            sold.forEach(function(item) { var m = item.sell_date.substring(0, 7); salesData[m] = (salesData[m] || 0) + 1; });
+            var ctx3 = document.getElementById('salesChart');
+            if (ctx3) {
+                charts.sales = new Chart(ctx3, {
+                    type: 'bar',
+                    data: { labels: Object.keys(salesData).sort(), datasets: [{ label: 'Sales', data: Object.keys(salesData).sort().map(function(m) { return salesData[m]; }), backgroundColor: '#7c6aef' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } }, x: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } } } }
+                });
+            }
+            
+            // Status Breakdown
+            var ctx4 = document.getElementById('statusChart');
+            if (ctx4) {
+                charts.status = new Chart(ctx4, {
+                    type: 'doughnut',
+                    data: { labels: ['Sold', 'Holding'], datasets: [{ data: [sold.length, holding.length], backgroundColor: ['#34d399', '#5c5d6e'] }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#9394a3' } } } }
+                });
+            }
+            
+            // Investment vs Revenue
+            var investment = items.reduce(function(sum, i) { return sum + (i.purchase_price_nok || 0); }, 0);
+            var revenue = sold.reduce(function(sum, i) { return sum + (i.sell_price_nok || 0); }, 0);
+            var ctx5 = document.getElementById('revenueChart');
+            if (ctx5) {
+                charts.revenue = new Chart(ctx5, {
+                    type: 'bar',
+                    data: { labels: ['Investment', 'Revenue'], datasets: [{ data: [investment, revenue], backgroundColor: ['#f87171', '#34d399'] }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } }, x: { grid: { color: '#2a2a38' }, ticks: { color: '#9394a3' } } } }
+                });
+            }
+        }
+
+        // Wishlist
+        function renderWishlist() {
+            var grid = document.getElementById('wishlist-grid');
+            var empty = document.getElementById('wishlist-empty');
+            if (!grid) return;
+            
+            if (wishlist.length === 0) {
+                grid.innerHTML = '<div class="empty-state" id="wishlist-empty"><div class="empty-icon"><i class="fas fa-heart"></i></div><div class="empty-title">Wishlist is empty</div><div class="empty-text">Add items you want to buy</div></div>';
+                return;
+            }
+            
+            grid.innerHTML = wishlist.map(function(item) {
+                return '<div class="wishlist-item"><div class="wishlist-item-header"><div class="wishlist-item-name">' + item.name + '</div><span class="wishlist-item-priority ' + item.priority + '">' + item.priority + '</span></div><div class="wishlist-item-details"><span><i class="fas fa-tag"></i> ' + (item.target_price ? item.target_price.toLocaleString() + ' kr' : 'No target') + '</span></div>' + (item.notes ? '<div class="wishlist-item-notes">' + item.notes + '</div>' : '') + '<div class="wishlist-item-actions"><button class="wishlist-btn" onclick="editWishlistItem(' + item.id + ')"><i class="fas fa-pen"></i> Edit</button><button class="wishlist-btn" onclick="deleteWishlistItem(' + item.id + ')"><i class="fas fa-trash"></i></button><button class="wishlist-btn convert" onclick="convertWishlistItem(' + item.id + ')"><i class="fas fa-check"></i> Bought</button></div></div>';
+            }).join('');
+        }
+        
+        function updateWishlistBadge() {
+            var badge = document.getElementById('wishlist-badge');
+            if (badge) {
+                badge.textContent = wishlist.length;
+                badge.style.display = wishlist.length > 0 ? 'inline' : 'none';
+            }
+        }
+        
+        function openWishlistModal(id) {
+            editingWishlistId = id || null;
+            document.getElementById('wishlist-form').reset();
+            document.getElementById('wishlist-modal-title').textContent = id ? 'Edit Wishlist Item' : 'Add to Wishlist';
+            
+            if (id) {
+                var item = wishlist.find(function(w) { return w.id === id; });
+                if (item) {
+                    document.getElementById('wishlist-form-id').value = item.id;
+                    document.getElementById('wishlist-form-name').value = item.name || '';
+                    document.getElementById('wishlist-form-price').value = item.target_price || '';
+                    document.getElementById('wishlist-form-priority').value = item.priority || 'low';
+                    document.getElementById('wishlist-form-notes').value = item.notes || '';
+                }
+            }
+            document.getElementById('wishlist-modal').classList.add('active');
+        }
+        
+        function closeWishlistModal() {
+            document.getElementById('wishlist-modal').classList.remove('active');
+            editingWishlistId = null;
+        }
+        
+        function saveWishlistItem() {
+            var name = document.getElementById('wishlist-form-name').value.trim();
+            if (!name) { alert('Please enter item name'); return; }
+            
+            var item = {
+                id: editingWishlistId || nextWishlistId++,
+                name: name,
+                target_price: parseFloat(document.getElementById('wishlist-form-price').value) || null,
+                priority: document.getElementById('wishlist-form-priority').value,
+                notes: document.getElementById('wishlist-form-notes').value.trim() || null
+            };
+            
+            if (editingWishlistId) {
+                var idx = wishlist.findIndex(function(w) { return w.id === editingWishlistId; });
+                if (idx !== -1) wishlist[idx] = item;
+            } else {
+                wishlist.push(item);
+            }
+            
+            saveLocalData();
+            renderWishlist();
+            updateWishlistBadge();
+            closeWishlistModal();
+        }
+        
+        function editWishlistItem(id) { openWishlistModal(id); }
+        
+        function deleteWishlistItem(id) {
+            wishlist = wishlist.filter(function(w) { return w.id !== id; });
+            saveLocalData();
+            renderWishlist();
+            updateWishlistBadge();
+        }
+        
+        function convertWishlistItem(id) {
+            var item = wishlist.find(function(w) { return w.id === id; });
+            if (item) {
+                openModal();
+                document.getElementById('form-name').value = item.name;
+                document.getElementById('name-count').textContent = item.name.length;
+                if (item.target_price) document.getElementById('form-purchase-price').value = item.target_price;
+                deleteWishlistItem(id);
+            }
+        }
+
+        // Item Modal
+        function selectType(type) {
+            document.querySelectorAll('.type-card').forEach(function(card) { card.classList.toggle('selected', card.dataset.type === type); });
+            document.getElementById('form-type').value = type;
+            document.getElementById('fields-single').classList.toggle('visible', type === 'Single');
+            document.getElementById('fields-graded').classList.toggle('visible', type === 'Graded');
         }
 
         function openModal(id) {
             editingId = id || null;
-            var modal = document.getElementById('item-modal');
-            var title = document.getElementById('modal-title');
-            
             document.getElementById('item-form').reset();
             document.querySelectorAll('.type-card').forEach(function(c) { c.classList.remove('selected'); });
             document.querySelectorAll('.conditional-fields').forEach(function(f) { f.classList.remove('visible'); });
             document.getElementById('name-count').textContent = '0';
             document.getElementById('desc-count').textContent = '0';
             document.getElementById('extra-notes-count').textContent = '0';
+            document.getElementById('modal-title').textContent = id ? 'Edit Item' : 'Add Item';
             
             if (id) {
-                title.textContent = 'Edit Item';
                 var item = items.find(function(i) { return i.id === id; });
                 if (item) {
                     document.getElementById('form-id').value = item.id;
                     document.getElementById('form-name').value = item.item_name || '';
                     document.getElementById('name-count').textContent = (item.item_name || '').length;
-                    
                     selectType(item.type);
-                    
                     document.getElementById('form-purchase-price').value = item.purchase_price_nok || '';
                     document.getElementById('form-purchase-date').value = item.purchase_date || '';
                     document.getElementById('form-payment-buy').value = item.payment_method_buy || '';
@@ -2289,7 +2573,6 @@
                     document.getElementById('desc-count').textContent = (item.description || '').length;
                     document.getElementById('form-extra-notes').value = item.extra_notes || '';
                     document.getElementById('extra-notes-count').textContent = (item.extra_notes || '').length;
-                    
                     if (item.type === 'Single') {
                         document.getElementById('form-card-number').value = item.card_number || '';
                         document.getElementById('form-condition').value = item.condition || '';
@@ -2301,35 +2584,23 @@
                     }
                 }
             } else {
-                title.textContent = 'Add Item';
                 document.getElementById('form-purchase-date').value = new Date().toISOString().split('T')[0];
             }
-            
-            modal.classList.add('active');
+            document.getElementById('item-modal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('item-modal').classList.remove('active');
-            editingId = null;
-        }
+        function closeModal() { document.getElementById('item-modal').classList.remove('active'); editingId = null; }
 
         function saveItem() {
             var type = document.getElementById('form-type').value;
             var name = document.getElementById('form-name').value.trim();
             var price = parseFloat(document.getElementById('form-purchase-price').value);
             var date = document.getElementById('form-purchase-date').value;
-            
-            if (!name || !type || isNaN(price) || !date) {
-                alert('Please fill in all required fields');
-                return;
-            }
+            if (!name || !type || isNaN(price) || !date) { alert('Please fill required fields'); return; }
             
             var item = {
-                id: editingId || nextId++,
-                item_name: name,
-                type: type,
-                purchase_price_nok: price,
-                purchase_date: date,
+                id: editingId || nextId++, item_name: name, type: type,
+                purchase_price_nok: price, purchase_date: date,
                 payment_method_buy: document.getElementById('form-payment-buy').value || null,
                 purchase_location: document.getElementById('form-purchase-location').value.trim() || null,
                 sell_price_nok: parseFloat(document.getElementById('form-sell-price').value) || null,
@@ -2338,12 +2609,7 @@
                 sell_location: document.getElementById('form-sell-location').value.trim() || null,
                 description: document.getElementById('form-description').value.trim() || null,
                 extra_notes: document.getElementById('form-extra-notes').value.trim() || null,
-                card_number: null,
-                condition: null,
-                grading_company: null,
-                grade: null,
-                cert_number: null,
-                graded_card_number: null
+                card_number: null, condition: null, grading_company: null, grade: null, cert_number: null, graded_card_number: null
             };
             
             if (type === 'Single') {
@@ -2357,8 +2623,8 @@
             }
             
             if (editingId) {
-                var index = items.findIndex(function(i) { return i.id === editingId; });
-                if (index !== -1) items[index] = item;
+                var idx = items.findIndex(function(i) { return i.id === editingId; });
+                if (idx !== -1) items[idx] = item;
             } else {
                 items.push(item);
             }
@@ -2366,102 +2632,75 @@
             saveLocalData();
             render();
             closeModal();
-            
-            if (isAPIConfigured()) {
-                markAsChanged();
-            }
+            if (isAPIConfigured()) markAsChanged();
         }
 
-        function editItem(id) {
-            openModal(id);
-        }
+        function editItem(id) { openModal(id); }
 
-        function deleteItem(id) {
-            deleteId = id;
-            document.getElementById('delete-modal').classList.add('active');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.remove('active');
-            deleteId = null;
-        }
+        function deleteItem(id) { deleteId = id; document.getElementById('delete-modal').classList.add('active'); }
+        function closeDeleteModal() { document.getElementById('delete-modal').classList.remove('active'); deleteId = null; }
 
         function confirmDelete() {
             if (deleteId) {
+                deletedItem = items.find(function(i) { return i.id === deleteId; });
                 items = items.filter(function(i) { return i.id !== deleteId; });
                 saveLocalData();
                 render();
-                
-                if (isAPIConfigured()) {
-                    markAsChanged();
-                }
+                if (isAPIConfigured()) markAsChanged();
+                showToast('Item deleted');
             }
             closeDeleteModal();
         }
 
+        // Undo Delete
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.add('show');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(function() { hideToast(); }, 10000);
+        }
+        
+        function hideToast() {
+            document.getElementById('toast').classList.remove('show');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            deletedItem = null;
+        }
+        
+        function undoDelete() {
+            if (deletedItem) {
+                items.push(deletedItem);
+                saveLocalData();
+                render();
+                if (isAPIConfigured()) markAsChanged();
+            }
+            hideToast();
+        }
+
+        // Print View
+        function printView() { window.print(); }
+
+        // Export
         function exportBackup() {
-            var backup = {
-                version: '3.0',
-                exportDate: new Date().toISOString(),
-                nextId: nextId,
-                items: items
-            };
+            var backup = { version: '4.0', exportDate: new Date().toISOString(), nextId: nextId, items: items, wishlist: wishlist };
             downloadFile(JSON.stringify(backup, null, 2), 'jones_backup.json', 'application/json');
         }
 
         function exportCSV() {
-            if (items.length === 0) {
-                alert('No items to export');
-                return;
-            }
-            
-            var headers = [
-                'ID', 'Item Name', 'Type', 'Purchase Price (NOK)', 'Purchase Date', 
-                'Payment Method (Buy)', 'Purchase Location', 'Sell Price (NOK)', 'Sell Date',
-                'Payment Method (Sell)', 'Sell Location', 'Profit', 'Status',
-                'Card Number', 'Condition', 'Grading Company', 'Grade', 'Cert Number',
-                'Description', 'Extra Notes'
-            ];
-            
+            if (items.length === 0) { alert('No items'); return; }
+            var headers = ['ID', 'Item Name', 'Type', 'Purchase Price', 'Purchase Date', 'Payment Buy', 'Purchase Location', 'Sell Price', 'Sell Date', 'Payment Sell', 'Sell Location', 'Profit', 'Status', 'Card Number', 'Condition', 'Grading Company', 'Grade', 'Cert Number', 'Description', 'Extra Notes'];
             var rows = items.map(function(item) {
                 var isSold = item.sell_price_nok || item.sell_date;
                 var profit = isSold ? (item.sell_price_nok || 0) - (item.purchase_price_nok || 0) : '';
-                var status = isSold ? 'Sold' : 'Holding';
-                
-                return [
-                    item.id,
-                    escapeCSV(item.item_name || ''),
-                    item.type || '',
-                    item.purchase_price_nok || '',
-                    item.purchase_date || '',
-                    item.payment_method_buy || '',
-                    escapeCSV(item.purchase_location || ''),
-                    item.sell_price_nok || '',
-                    item.sell_date || '',
-                    item.payment_method_sell || '',
-                    escapeCSV(item.sell_location || ''),
-                    profit,
-                    status,
-                    item.card_number || item.graded_card_number || '',
-                    item.condition || '',
-                    item.grading_company || '',
-                    item.grade || '',
-                    item.cert_number || '',
-                    escapeCSV(item.description || ''),
-                    escapeCSV(item.extra_notes || '')
-                ].join(',');
+                return [item.id, escapeCSV(item.item_name), item.type, item.purchase_price_nok || '', item.purchase_date || '', item.payment_method_buy || '', escapeCSV(item.purchase_location), item.sell_price_nok || '', item.sell_date || '', item.payment_method_sell || '', escapeCSV(item.sell_location), profit, isSold ? 'Sold' : 'Holding', item.card_number || item.graded_card_number || '', item.condition || '', item.grading_company || '', item.grade || '', item.cert_number || '', escapeCSV(item.description), escapeCSV(item.extra_notes)].join(',');
             });
-            
-            var csv = headers.join(',') + '\n' + rows.join('\n');
-            downloadFile(csv, 'jones_export.csv', 'text/csv');
+            downloadFile(headers.join(',') + '\n' + rows.join('\n'), 'jones_export.csv', 'text/csv');
         }
 
         function escapeCSV(str) {
             if (!str) return '';
             str = str.toString();
-            if (str.indexOf(',') !== -1 || str.indexOf('"') !== -1 || str.indexOf('\n') !== -1) {
-                return '"' + str.replace(/"/g, '""') + '"';
-            }
+            if (str.indexOf(',') !== -1 || str.indexOf('"') !== -1 || str.indexOf('\n') !== -1) return '"' + str.replace(/"/g, '""') + '"';
             return str;
         }
 
@@ -2469,41 +2708,28 @@
             var blob = new Blob([content], { type: type });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
+            a.href = url; a.download = filename; a.click();
             URL.revokeObjectURL(url);
         }
 
         function handleImport(event) {
             var file = event.target.files[0];
             if (!file) return;
-            
             var reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     var backup = JSON.parse(e.target.result);
-                    
-                    if (!backup.items || !Array.isArray(backup.items)) {
-                        throw new Error('Invalid format');
-                    }
-                    
-                    if (!confirm('Import ' + backup.items.length + ' items? This replaces current data.')) return;
-                    
+                    if (!backup.items || !Array.isArray(backup.items)) throw new Error('Invalid');
+                    if (!confirm('Import ' + backup.items.length + ' items?')) return;
                     items = backup.items;
                     nextId = backup.nextId || Math.max.apply(null, items.map(function(i) { return i.id; }).concat([9999])) + 1;
-                    
+                    if (backup.wishlist) { wishlist = backup.wishlist; nextWishlistId = Math.max.apply(null, wishlist.map(function(w) { return w.id; }).concat([0])) + 1; }
                     saveLocalData();
                     render();
-                    
-                    if (isAPIConfigured()) {
-                        markAsChanged();
-                    }
-                    
+                    updateWishlistBadge();
+                    if (isAPIConfigured()) markAsChanged();
                     alert('Import successful!');
-                } catch (err) {
-                    alert('Import failed. Invalid file.');
-                }
+                } catch (err) { alert('Import failed.'); }
             };
             reader.readAsText(file);
             event.target.value = '';
