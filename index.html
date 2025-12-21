@@ -2364,8 +2364,28 @@
         function formatDate(date) {
             if (!date) return '';
             var d = new Date(date);
+            if (isNaN(d.getTime())) return '';
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+        }
+        
+        // Helper function to format date for input fields (YYYY-MM-DD format)
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return '';
+            try {
+                // If already in YYYY-MM-DD format, return as is
+                if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                    return dateStr;
+                }
+                var d = new Date(dateStr);
+                if (isNaN(d.getTime())) return '';
+                var year = d.getFullYear();
+                var month = ('0' + (d.getMonth() + 1)).slice(-2);
+                var day = ('0' + d.getDate()).slice(-2);
+                return year + '-' + month + '-' + day;
+            } catch (e) {
+                return '';
+            }
         }
 
         // Charts
@@ -2562,11 +2582,13 @@
                     document.getElementById('name-count').textContent = (item.item_name || '').length;
                     selectType(item.type);
                     document.getElementById('form-purchase-price').value = item.purchase_price_nok || '';
-                    document.getElementById('form-purchase-date').value = item.purchase_date || '';
+                    // Use formatDateForInput to properly format dates
+                    document.getElementById('form-purchase-date').value = formatDateForInput(item.purchase_date);
                     document.getElementById('form-payment-buy').value = item.payment_method_buy || '';
                     document.getElementById('form-purchase-location').value = item.purchase_location || '';
                     document.getElementById('form-sell-price').value = item.sell_price_nok || '';
-                    document.getElementById('form-sell-date').value = item.sell_date || '';
+                    // Use formatDateForInput to properly format dates
+                    document.getElementById('form-sell-date').value = formatDateForInput(item.sell_date);
                     document.getElementById('form-payment-sell').value = item.payment_method_sell || '';
                     document.getElementById('form-sell-location').value = item.sell_location || '';
                     document.getElementById('form-description').value = item.description || '';
