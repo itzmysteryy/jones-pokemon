@@ -895,6 +895,198 @@
             box-shadow: 0 4px 12px var(--accent-glow);
         }
         
+        /* Notes Tab */
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-elevated);
+        }
+        
+        .notes-title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notes-title-section i {
+            color: var(--accent);
+            font-size: 20px;
+        }
+        
+        .notes-title-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .notes-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notes-saved-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--success);
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .notes-saved-indicator.show {
+            opacity: 1;
+        }
+        
+        .notes-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        
+        .notes-toolbar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notes-toolbar-btn:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        
+        .notes-toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 8px;
+        }
+        
+        .notes-toolbar-select {
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        .notes-toolbar-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .notes-color-picker {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .notes-color-picker::-webkit-color-swatch-wrapper {
+            padding: 2px;
+        }
+        
+        .notes-color-picker::-webkit-color-swatch {
+            border-radius: 4px;
+            border: none;
+        }
+        
+        .notes-editor-container {
+            padding: 24px;
+            min-height: 500px;
+            background: var(--bg-dark);
+        }
+        
+        .notes-editor {
+            min-height: 450px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            line-height: 1.7;
+            outline: none;
+            overflow-y: auto;
+        }
+        
+        .notes-editor:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        
+        .notes-editor:empty:before {
+            content: attr(placeholder);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .notes-editor h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        
+        .notes-editor h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .notes-editor h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .notes-editor ul, .notes-editor ol {
+            margin-left: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .notes-editor li {
+            margin-bottom: 4px;
+        }
+        
+        .notes-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 12px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-elevated);
+        }
+        
+        .notes-char-count, .notes-word-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
         /* Toast / Undo */
         .toast {
             position: fixed;
@@ -1458,6 +1650,10 @@
                 Wishlist
                 <span class="tab-badge" id="wishlist-badge">0</span>
             </button>
+            <button class="nav-tab" onclick="switchTab('notes')">
+                <i class="fas fa-file-alt"></i>
+                Notes
+            </button>
         </div>
         
         <!-- Collection Tab -->
@@ -1696,6 +1892,79 @@
                         <div class="empty-title">Wishlist is empty</div>
                         <div class="empty-text">Add items you want to buy</div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notes Tab -->
+        <div class="tab-content" id="tab-notes">
+            <div class="dashboard-card">
+                <div class="notes-header">
+                    <div class="notes-title-section">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>My Notes</h3>
+                    </div>
+                    <div class="notes-actions">
+                        <span class="notes-saved-indicator" id="notes-saved-indicator">
+                            <i class="fas fa-check-circle"></i> Saved
+                        </span>
+                        <button class="notes-toolbar-btn" onclick="clearNotes()" title="Clear All">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="notes-toolbar">
+                    <button class="notes-toolbar-btn" onclick="formatText('bold')" title="Bold (Ctrl+B)">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="notes-toolbar-btn" onclick="formatText('italic')" title="Italic (Ctrl+I)">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="notes-toolbar-btn" onclick="formatText('underline')" title="Underline (Ctrl+U)">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <div class="notes-toolbar-divider"></div>
+                    <button class="notes-toolbar-btn" onclick="formatText('insertUnorderedList')" title="Bullet List">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="notes-toolbar-btn" onclick="formatText('insertOrderedList')" title="Numbered List">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <div class="notes-toolbar-divider"></div>
+                    <button class="notes-toolbar-btn" onclick="formatText('justifyLeft')" title="Align Left">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="notes-toolbar-btn" onclick="formatText('justifyCenter')" title="Align Center">
+                        <i class="fas fa-align-center"></i>
+                    </button>
+                    <button class="notes-toolbar-btn" onclick="formatText('justifyRight')" title="Align Right">
+                        <i class="fas fa-align-right"></i>
+                    </button>
+                    <div class="notes-toolbar-divider"></div>
+                    <select class="notes-toolbar-select" onchange="formatHeading(this.value); this.value='';">
+                        <option value="">Heading</option>
+                        <option value="h1">Heading 1</option>
+                        <option value="h2">Heading 2</option>
+                        <option value="h3">Heading 3</option>
+                        <option value="p">Normal</option>
+                    </select>
+                    <select class="notes-toolbar-select" onchange="formatFontSize(this.value); this.value='';">
+                        <option value="">Font Size</option>
+                        <option value="1">Small</option>
+                        <option value="3">Normal</option>
+                        <option value="5">Large</option>
+                        <option value="7">Extra Large</option>
+                    </select>
+                    <div class="notes-toolbar-divider"></div>
+                    <input type="color" class="notes-color-picker" id="notes-text-color" onchange="formatTextColor(this.value)" title="Text Color" value="#f4f4f6">
+                    <input type="color" class="notes-color-picker" id="notes-bg-color" onchange="formatBgColor(this.value)" title="Highlight Color" value="#222230">
+                </div>
+                <div class="notes-editor-container">
+                    <div class="notes-editor" id="notes-editor" contenteditable="true" placeholder="Start writing your notes here..."></div>
+                </div>
+                <div class="notes-footer">
+                    <span class="notes-char-count" id="notes-char-count">0 characters</span>
+                    <span class="notes-word-count" id="notes-word-count">0 words</span>
                 </div>
             </div>
         </div>
@@ -1976,6 +2245,7 @@
         // State
         var items = [];
         var wishlist = [];
+        var globalNotes = '';
         var nextId = 10000;
         var nextWishlistId = 1;
         var editingId = null;
@@ -1990,6 +2260,7 @@
         var countdownInterval = null;
         var nextSyncTime = null;
         var toastTimeout = null;
+        var notesSaveTimeout = null;
         var charts = {};
         
         var AUTO_SYNC_DELAY = 30;
@@ -2033,10 +2304,12 @@
                 var storedId = localStorage.getItem('jones_nextId');
                 var storedWishlist = localStorage.getItem('jones_wishlist');
                 var storedWishlistId = localStorage.getItem('jones_nextWishlistId');
+                var storedNotes = localStorage.getItem('jones_global_notes');
                 if (stored) items = JSON.parse(stored);
                 if (storedId) nextId = parseInt(storedId);
                 if (storedWishlist) wishlist = JSON.parse(storedWishlist);
                 if (storedWishlistId) nextWishlistId = parseInt(storedWishlistId);
+                if (storedNotes) globalNotes = storedNotes;
             } catch (e) { console.error('Load error:', e); }
         }
 
@@ -2046,6 +2319,7 @@
                 localStorage.setItem('jones_nextId', nextId.toString());
                 localStorage.setItem('jones_wishlist', JSON.stringify(wishlist));
                 localStorage.setItem('jones_nextWishlistId', nextWishlistId.toString());
+                localStorage.setItem('jones_global_notes', globalNotes);
             } catch (e) { console.error('Save error:', e); }
         }
 
@@ -2208,6 +2482,87 @@
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') { closeModal(); closeDeleteModal(); closeWishlistModal(); }
             });
+            
+            // Setup notes editor
+            var notesEditor = document.getElementById('notes-editor');
+            if (notesEditor) {
+                notesEditor.innerHTML = globalNotes;
+                notesEditor.addEventListener('input', function() {
+                    globalNotes = notesEditor.innerHTML;
+                    updateNotesCount();
+                    
+                    // Auto-save with debounce
+                    if (notesSaveTimeout) clearTimeout(notesSaveTimeout);
+                    notesSaveTimeout = setTimeout(function() {
+                        saveLocalData();
+                        showNotesSaved();
+                    }, 1000);
+                });
+                updateNotesCount();
+            }
+        }
+        
+        // Notes Functions
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('notes-editor').focus();
+        }
+        
+        function formatHeading(tag) {
+            if (!tag) return;
+            document.execCommand('formatBlock', false, tag);
+            document.getElementById('notes-editor').focus();
+        }
+        
+        function formatFontSize(size) {
+            if (!size) return;
+            document.execCommand('fontSize', false, size);
+            document.getElementById('notes-editor').focus();
+        }
+        
+        function formatTextColor(color) {
+            document.execCommand('foreColor', false, color);
+            document.getElementById('notes-editor').focus();
+        }
+        
+        function formatBgColor(color) {
+            document.execCommand('hiliteColor', false, color);
+            document.getElementById('notes-editor').focus();
+        }
+        
+        function updateNotesCount() {
+            var editor = document.getElementById('notes-editor');
+            if (!editor) return;
+            
+            var text = editor.innerText || '';
+            var charCount = text.length;
+            var wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+            
+            var charEl = document.getElementById('notes-char-count');
+            var wordEl = document.getElementById('notes-word-count');
+            if (charEl) charEl.textContent = charCount.toLocaleString() + ' characters';
+            if (wordEl) wordEl.textContent = wordCount.toLocaleString() + ' words';
+        }
+        
+        function showNotesSaved() {
+            var indicator = document.getElementById('notes-saved-indicator');
+            if (indicator) {
+                indicator.classList.add('show');
+                setTimeout(function() {
+                    indicator.classList.remove('show');
+                }, 2000);
+            }
+        }
+        
+        function clearNotes() {
+            if (!confirm('Are you sure you want to clear all notes? This cannot be undone.')) return;
+            var editor = document.getElementById('notes-editor');
+            if (editor) {
+                editor.innerHTML = '';
+                globalNotes = '';
+                saveLocalData();
+                updateNotesCount();
+            }
         }
 
         // Tab Navigation
@@ -2218,6 +2573,13 @@
             document.getElementById('tab-' + tab).classList.add('active');
             if (tab === 'analytics') renderCharts();
             if (tab === 'wishlist') renderWishlist();
+            if (tab === 'notes') {
+                var editor = document.getElementById('notes-editor');
+                if (editor && editor.innerHTML !== globalNotes) {
+                    editor.innerHTML = globalNotes;
+                }
+                updateNotesCount();
+            }
         }
 
         function setStatusFilter(status) {
@@ -2704,7 +3066,7 @@
 
         // Export
         function exportBackup() {
-            var backup = { version: '4.0', exportDate: new Date().toISOString(), nextId: nextId, items: items, wishlist: wishlist };
+            var backup = { version: '4.1', exportDate: new Date().toISOString(), nextId: nextId, items: items, wishlist: wishlist, globalNotes: globalNotes };
             downloadFile(JSON.stringify(backup, null, 2), 'jones_backup.json', 'application/json');
         }
 
@@ -2746,6 +3108,11 @@
                     items = backup.items;
                     nextId = backup.nextId || Math.max.apply(null, items.map(function(i) { return i.id; }).concat([9999])) + 1;
                     if (backup.wishlist) { wishlist = backup.wishlist; nextWishlistId = Math.max.apply(null, wishlist.map(function(w) { return w.id; }).concat([0])) + 1; }
+                    if (backup.globalNotes) { 
+                        globalNotes = backup.globalNotes; 
+                        var editor = document.getElementById('notes-editor');
+                        if (editor) editor.innerHTML = globalNotes;
+                    }
                     saveLocalData();
                     render();
                     updateWishlistBadge();
